@@ -6,3 +6,9 @@ declare module 'three/examples/jsm/controls/OrbitControls' {
         dispose(): void;
     }
 }
+
+
+declare module "*.glsl" {
+    const value: string;
+    export default value
+}
