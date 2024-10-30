@@ -28,7 +28,7 @@ function setUniforms(gl: WebGLRenderingContext, program: WebGLProgram, triangle:
 // 用 request Animation 实现动画
 let triangles: any[] = [];
 export function update(gl: WebGLRenderingContext, program: WebGLProgram) {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 5; i++) {
         triangles.push(createRandomTriangle());
     }
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
