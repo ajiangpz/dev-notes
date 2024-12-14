@@ -1,0 +1,168 @@
+---
+title: 使用 canvas 实现灰度化图片
+date: '2016-03-08'
+tags: ['canvas', 'react', 'features']
+draft: false
+summary: Example of a markdown file with code blocks and syntax highlighting
+---
+
+### React 和 Canvas: 使用 ImageData 处理图片灰度化效果
+
+在这篇博客中，我们将创建一个简单的 React 应用程序，通过 Canvas 和 `ImageData` 对图片进行灰度化处理。具体来说，我们将加载图片，将其绘制在 Canvas 上，提取图片数据，然后遍历和修改像素数据实现灰度效果。
+
+#### 步骤 1：项目准备
+
+首先，创建一个新的 React 组件，在项目文件夹下创建一个 `Page.tsx` 文件，将会在该组件中完成图片的处理工作。代码的整体结构如下：
+
+```typescript
+"use client";
+import React, { useEffect, useRef } from "react";
+
+export default function Page() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        // 主逻辑在此执行
+    }, []);
+
+    return (
+        <div>
+            <canvas id="canvas" ref={canvasRef}></canvas>
+        </div>
+    );
+}
+```
+
+### 核心功能实现
+
+我们将以下功能逐步实现：
+
+1.  加载图片并将其绘制在 Canvas 上。
+2.  获取图片的 `ImageData`。
+3.  遍历 `ImageData` 中的像素数据，实现灰度化处理。
+
+#### 加载图片
+
+在 React 中，可以通过 `useEffect` 钩子在组件渲染后加载图片。这里定义了一个 `loadImage` 函数，通过 `Image` 对象加载图片并返回一个 Promise：
+
+```typescript
+// 加载图片并返回 HTMLImageElement
+function loadImage(url: string) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // 允许跨域加载图片
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
+}
+```
+
+在 `useEffect` 中调用 `loadImage` 函数加载图片。加载完成后，我们将图片绘制到 Canvas 上。
+
+#### 绘制图片
+
+接下来创建一个 `drawImage` 函数，用于将加载的图片绘制在 Canvas 上。可以通过 Canvas 的 `2D` 上下文实现：
+
+```typescript
+function drawImage(image: HTMLImageElement, canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+        ctx.drawImage(image, 0, 0); // 在 Canvas 上绘制图片
+    }
+}
+```
+
+在 `useEffect` 中，当图片加载完毕后调用该函数，确保图片已经绘制在 Canvas 上。
+
+#### 获取 ImageData
+
+为了进行灰度化处理，我们需要先从图片中获取像素数据。使用 `OffscreenCanvas` 来提取图片的 `ImageData` 数据，这样就不需要在 Canvas 上显示图片：
+
+```typescript
+function getImageData(img: HTMLImageElement, rect: [number, number, number, number]) {
+    const canvas = new OffscreenCanvas(img.width, img.height); // 创建一个 OffscreenCanvas
+    const ctx = canvas.getContext("2d");
+    ctx?.drawImage(img, 0, 0); // 绘制图片
+    const imageData = ctx?.getImageData(...rect); // 获取指定区域的 ImageData
+    return imageData;
+}
+```
+
+在 `useEffect` 中调用 `getImageData` 获取整个图片的像素数据。
+
+#### 遍历和修改 ImageData 数据
+
+现在我们已经获得了图片的像素数据（`ImageData`），我们可以对它进行处理。这里我们将实现灰度化效果，将每个像素的 RGB 值设置为平均值。
+
+```typescript
+function traverseImageData(imageData: ImageData) {
+    for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        const avg = (r + g + b) / 3; // 计算 RGB 平均值
+        imageData.data[i] = avg;
+        imageData.data[i + 1] = avg;
+        imageData.data[i + 2] = avg;
+    }
+}
+```
+
+遍历 `imageData.data` 数组，每四个元素代表一个像素的 RGBA 值。将 `r`、`g`、`b` 赋值为平均值，实现灰度化。
+
+#### 整合代码
+
+将所有代码整合在 `useEffect` 中，使得页面加载时自动加载、处理并显示图片。
+
+```typescript
+export default function Page() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        (async function () {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+
+            const context = canvas.getContext("2d");
+            const img = await loadImage("https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D");
+            
+            // 设置 Canvas 尺寸以匹配图片尺寸
+            canvas.width = img.width;
+            canvas.height = img.height;  
+            
+            // 获取图片数据
+            const imageData = getImageData(img, [0, 0, img.width, img.height]);
+            if (!imageData) return;
+
+            // 应用灰度化
+            traverseImageData(imageData);
+
+            // 将修改后的数据重新绘制到 Canvas 上
+            if (context) {
+                context.putImageData(imageData, 0, 0);
+            }
+        })();
+    }, []);
+
+    return (
+        <div>
+            <canvas id="canvas" ref={canvasRef}></canvas>
+        </div>
+    );
+}
+```
+
+#### 效果展示
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/8228b0664c3c455db89c7128cd1522e9~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734229165&x-orig-sign=OML9l7eR5jWAi06ccF60NM7q8M0%3D)
+
+#### 总结
+
+这篇博客展示了如何使用 React、Canvas 和 `ImageData` 对图片进行灰度化处理。主要步骤包括：
+
+1.  **加载图片**：通过 `loadImage` 函数加载图片。
+2.  **绘制图片**：使用 Canvas 在页面上绘制图片。
+3.  **提取和修改 `ImageData`**：获取图片数据并进行遍历，通过计算 RGB 平均值实现灰度效果。
+
+希望这篇教程能够帮助你理解如何在 React 中处理 Canvas 图像数据！

@@ -1,0 +1,131 @@
+---
+title: 使用 React 和 WebGL 绘制三角形
+date: '2016-03-08'
+tags: ['WebGL', 'GLSL', 'React']
+draft: false
+summary: Example of a markdown file with code blocks and syntax highlighting
+---
+
+
+#### 1. 在 Next.js 中配置 `raw-loader`
+
+要导入 `.glsl` 着色器文件，我们需要在 `next.config.mjs` 文件中配置 `raw-loader`。首先，安装 `raw-loader`：
+
+```bash
+npm install raw-loader --save-dev
+```
+
+接着，在项目根目录的 `next.config.mjs` 中添加以下配置：
+
+```javascript
+// next.config.mjs
+
+const nextConfig = {
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.glsl$/,
+      use: 'raw-loader',
+    });
+    return config;
+  },
+};
+
+export default nextConfig;
+```
+
+这段配置允许 Next.js 加载 `.glsl` 文件的原始内容并将其作为字符串导入。
+
+#### 2. 设置 React 组件
+
+现在我们可以在 React 组件中导入 GLSL 着色器文件，并在 WebGL 程序中使用它们：
+
+```javascript
+"use client";
+import { useEffect, useRef } from "react";
+import vertex from "./vertexShader.glsl";
+import fragment from "./fragmentShader.glsl";
+
+export default function Triangle() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    
+    useEffect(() => {
+        if (canvasRef.current) {
+            const gl = canvasRef.current.getContext("webgl2");
+            if (!gl) return;
+
+            // 创建顶点着色器
+            const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+            if (vertexShader) {
+                gl.shaderSource(vertexShader, vertex);
+                gl.compileShader(vertexShader);
+            }
+
+            // 创建片元着色器
+            const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+            if (fragmentShader) {
+                gl.shaderSource(fragmentShader, fragment);
+                gl.compileShader(fragmentShader);
+            }
+
+            // 创建 WebGL 程序
+            const program = gl.createProgram();
+            if (program) {
+                gl.attachShader(program, vertexShader as WebGLShader);
+                gl.attachShader(program, fragmentShader as WebGLShader);
+                gl.linkProgram(program);
+                gl.useProgram(program);
+                
+                // 定义顶点数据
+                const points = new Float32Array([0.0, 1.0, -1.0, -1.0, 1.0, -1.0]);
+                
+                // 将数据写入缓存区
+                const bufferId = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+                gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+
+                // 绑定给 position 变量
+                const vPosition = gl.getAttribLocation(program, 'position');
+                gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(vPosition);
+
+                // 清除颜色缓冲区并绘制三角形
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.drawArrays(gl.LINE_LOOP, 0, points.length / 2);
+            }
+        }
+    }, []);
+
+    return (
+        <canvas id="canvas" ref={canvasRef} width="500px" height="500px">
+            Triangle
+        </canvas>
+    );
+}
+```
+
+#### 3. 着色器文件
+
+在同一目录下，创建 GLSL 文件并编写顶点和片元着色器：
+
+**`vertexShader.glsl`**:
+
+```glsl
+attribute vec2 position;
+void main() {
+    gl_Position = vec4(position, 0.0, 1.0);
+}
+
+```
+
+**`fragmentShader.glsl`**:
+
+```glsl
+precision mediump float;
+void main() {
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}
+```
+
+#### 4. 运行和查看结果
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/ae67f63444244d729c8a46847123a4e4~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734229623&x-orig-sign=3AD%2FKpqDVxB%2FntVbTsmhLvDUExE%3D)

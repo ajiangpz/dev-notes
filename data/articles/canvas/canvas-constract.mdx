@@ -1,0 +1,154 @@
+---
+title: 使用 Canvas 绘制图片并添加对比色文本
+date: '2016-03-08'
+tags: ['markdown', 'code', 'features']
+draft: false
+summary: Example of a markdown file with code blocks and syntax highlighting
+---
+### 在 React 中使用 Canvas 绘制图片并添加对比色文本
+
+在这篇博客中，我们将学习如何在 React 中使用 Canvas 绘制图片、处理图片数据，并根据图片的顶部颜色生成对比色，以便在图片顶部添加清晰易读的文字。这个项目适合对前端图形处理和 Canvas 有兴趣的开发者，特别是那些需要在项目中应用图像处理和文字叠加的场景。
+
+### 需求分析
+
+我们希望实现以下几个功能：
+
+1.  **加载和绘制图片**：在 Canvas 中加载一张图片并将其绘制出来。
+2.  **获取图片顶部的平均颜色**：提取图片顶部区域的颜色数据，计算平均颜色值。
+3.  **生成对比色**：根据顶部颜色生成一个对比色（黑色或白色），使其与顶部颜色形成明显对比。
+4.  **绘制文字**：在图片顶部使用对比色绘制一段文字，以确保文字清晰可读。
+
+### 技术点
+
+*   **Canvas API**：用于图像绘制和图像数据处理。
+*   **React Hooks**：使用 `useRef` 和 `useEffect` 管理 Canvas 和异步操作。
+*   **对比色计算**：通过亮度计算来确定文本的最佳对比色。
+
+### 实现步骤
+
+#### 1. 创建项目结构
+
+在 React 项目中创建一个新的组件文件 `Page.tsx`  ，并定义基本结构：
+
+```typescript
+"use client";
+import React, { useEffect, useRef } from "react";
+```
+
+#### 2. 加载图片并绘制到 Canvas
+
+我们先定义一个 `loadImage` 函数，用于从 URL 加载图片并返回 `HTMLImageElement`。在图片加载完成后，我们可以使用 `canvas.getContext("2d").drawImage()` 将图片绘制到 Canvas 上：
+
+```typescript
+function loadImage(url: string) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
+}
+```
+
+#### 3. 获取图片顶部的平均颜色
+
+接下来，我们提取图片顶部的颜色数据，并计算其平均颜色。我们可以取图片顶部 10% 的高度作为样本区域：
+
+```typescript
+function getTopColor(imageData: ImageData) {
+    const { data, width, height } = imageData;
+    const topHeight = Math.floor(height * 0.1);
+
+    let rTotal = 0, gTotal = 0, bTotal = 0, pixelCount = 0;
+
+    for (let y = 0; y < topHeight; y++) {
+        for (let x = 0; x < width; x++) {
+            const index = (y * width + x) * 4;
+            rTotal += data[index];
+            gTotal += data[index + 1];
+            bTotal += data[index + 2];
+            pixelCount++;
+        }
+    }
+
+    const rAvg = rTotal / pixelCount;
+    const gAvg = gTotal / pixelCount;
+    const bAvg = bTotal / pixelCount;
+
+    return { r: Math.round(rAvg), g: Math.round(gAvg), b: Math.round(bAvg) };
+}
+```
+
+#### 4. 根据顶部颜色生成对比色
+
+为了确保文字在图片上具有清晰的对比度，我们可以根据顶部颜色的亮度来选择对比色。亮度公式如下：
+
+$$ brightness  = 0.299 \times R + 0.587 \times G + 0.114 \times B $$
+
+
+如果亮度较高，则使用黑色作为对比色；如果亮度较低，则使用白色。代码如下：
+
+```typescript
+function getContrastColor({ r, g, b }: { r: number; g: number; b: number }) {
+    const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+    return brightness > 128 ? 'black' : 'white';
+}
+```
+
+#### 5. 使用对比色绘制文本
+
+现在我们可以将文字绘制到 Canvas 的顶部区域，并使用对比色确保文字清晰可见。
+
+```typescript
+export default function Page() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        (async function () {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+
+            const context = canvas.getContext("2d");
+            const img = await loadImage("https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D");
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            const imageData = context?.getImageData(0, 0, img.width, img.height);
+            if (!imageData) return;
+
+            const topColor = getTopColor(imageData);
+            const contrastColor = getContrastColor(topColor);
+
+            context.putImageData(imageData, 0, 0);
+
+            // 设置文本样式并绘制到顶部
+            context.font = "24px Arial";
+            context.fillStyle = contrastColor;
+            context.textAlign = "center";
+            context.fillText("Sample Text at Top", canvas.width / 2, 30);
+        })();
+    }, []);
+
+    return (
+        <div>
+            <canvas id="canvas" ref={canvasRef}></canvas>
+        </div>
+    );
+}
+```
+
+### 6. 整体效果展示
+
+在以上代码中，我们已经将图片绘制到 Canvas，并在图片顶部添加了一段带有对比色的文字。
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/04f3dbca16604743851f746364d2ad1e~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734227728&x-orig-sign=9kaHDN838ZNoC4m8ZMsnsiRj8mI%3D)
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/1a302f1a77304c6e93b317e31a2c2b2d~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734227728&x-orig-sign=8NuyTjfJMUAS%2FYCNDzBAGMG4%2Frw%3D)
+
+### 总结
+
+在这篇博客中，我们展示了如何在 React 中使用 Canvas 来加载和处理图像，并根据图像顶部颜色生成对比色用于文本显示。通过这种方式，我们可以在图片上生成清晰的文字效果，使文字与背景形成良好对比。这种技术适用于各种图像叠加应用场景，尤其是在创建水印或提示文字时。
+
+通过使用 Canvas 的 `getImageData` 和 `putImageData`，我们不仅能够处理图像的颜色和亮度，还可以实现更丰富的图像处理效果。这种方法为前端图像处理提供了一个强大的工具，让我们能够在应用中呈现更多的视觉效果。

@@ -25,14 +25,30 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/data/*": [
+        "./data/*"
+      ],
+      "@/layouts/*": [
+        "./layouts/*"
+      ],
+      "@/css/*": [
+        "./css/*"
+      ],
+      "contentlayer/generated": [
+        "./.contentlayer/generated"
       ]
-    }
+    },
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "tailwind.config.js"
   ],
   "exclude": [
     "node_modules"

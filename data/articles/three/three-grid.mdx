@@ -1,0 +1,220 @@
+---
+title: 使用 Three.js 和 着色器绘制网格
+date: '2016-03-08'
+tags: ['Three.js', 'GLSL', 'React']
+draft: false
+summary: Example of a markdown file with code blocks and syntax highlighting
+---
+### 使用 Three.js 和 React 创建动态网格效果
+
+在本文中，我们将学习如何使用 Three.js 和 React 创建一个动态网格效果。我们将使用 GLSL（OpenGL Shading Language）编写自定义着色器，通过 Three.js 渲染一个二维的网格图案。本文示例是一个简单的项目，可以帮助你理解如何在 Three.js 中实现自定义着色器，并使用 React 管理渲染循环。
+
+### 先决条件
+
+在开始之前，你需要了解以下技术：
+
+*   **React**：本项目使用 React 管理生命周期。
+*   **Three.js**：一个流行的 3D 渲染库，用于处理 WebGL 场景。
+*   **GLSL**：用于定义自定义着色器。我们将使用 GLSL 来控制网格的外观。
+
+### 创建项目结构
+
+首先，我们将设置一个新的 React 组件，并引入 Three.js。创建一个名为 `ThreeJsGrid.tsx` 的文件，代码如下：
+
+```typescript
+"use client";
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+
+function ThreeJsGrid() {
+    const mountRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // 初始化场景、摄像机和渲染器
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(
+            -1, 1, 1, -1, 0.1, 10
+        );
+        camera.position.z = 1;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(500, 500);
+        if (!mountRef.current) return;
+        mountRef.current.appendChild(renderer.domElement);
+
+        // 定义着色器
+        const vertexShader = `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `;
+
+        const fragmentShader = `
+          precision mediump float;
+          varying vec2 vUv;
+          uniform float rows;
+          void main() {
+            vec2 st = fract(vUv * rows);
+            float d1 = step(st.x, 0.9);
+            float d2 = step(0.1, st.y);
+            gl_FragColor = vec4(mix(vec3(0.8), vec3(1.0), d1 * d2), 1.0);
+          }
+        `;
+
+        // 创建一个平面几何体并应用着色器
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                rows: { value: 50.0 }, // 设置网格的行数
+            },
+        });
+        const plane = new THREE.Mesh(geometry, material);
+        scene.add(plane);
+
+        // 渲染循环
+        const animate = () => {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // 组件卸载时清理资源
+        return () => {
+            renderer.dispose();
+            material.dispose();
+            geometry.dispose();
+            if (mountRef.current)
+                mountRef.current.removeChild(renderer.domElement);
+        };
+    }, []);
+
+    return <div ref={mountRef} />;
+}
+
+export default ThreeJsGrid;
+```
+
+### 代码解析
+
+#### 初始化场景和摄像机
+
+```typescript
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(
+    -1, 1, 1, -1, 0.1, 10
+);
+camera.position.z = 1;
+```
+
+我们创建了一个 `OrthographicCamera` 以正交方式查看场景，这样可以确保图案没有透视效果。摄像机位置为 `z=1`。
+
+#### 创建渲染器并将其附加到 DOM
+
+```typescript
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(500, 500);
+if (!mountRef.current) return;
+mountRef.current.appendChild(renderer.domElement);
+```
+
+在 `WebGLRenderer` 设置后，我们将其 DOM 元素附加到 `ref` 指向的 HTML 元素上。
+
+#### 顶点和片段着色器
+
+在 Three.js 中，着色器可以极大地控制材质的显示效果。这里我们定义了两个着色器：
+
+*   **Vertex Shader**：用于将顶点映射到屏幕坐标。
+*   **Fragment Shader**：控制像素的颜色，生成我们想要的网格图案。
+
+```glsl
+// 顶点着色器
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+// 片段着色器
+const fragmentShader = `
+  precision mediump float;
+  varying vec2 vUv;
+  uniform float rows;
+  void main() {
+    vec2 st = fract(vUv * rows);
+    float d1 = step(st.x, 0.9);
+    float d2 = step(0.1, st.y);
+    gl_FragColor = vec4(mix(vec3(0.8), vec3(1.0), d1 * d2), 1.0);
+  }
+`;
+```
+
+片段着色器中的关键部分如下：
+
+*   着色器是根据纹理坐标来绘制的，即 (0,0) 到 （1，1）之间的内容，默认就是一种颜色，现在gl\_FragColor 由 d1和d2控制，d1和d2根据纹理坐标变化。rows将纹理坐标放大了六十倍，得到 0到60之间到小数循环变化，d1和d2根据图中的x,y坐标变化，则着色器颜色随之变化。
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/2fc6007d186f490da572345fbef69e21~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734229401&x-orig-sign=JjA9XURINYnJeruqp4HGGv%2B38pE%3D)
+
+*   fract 函数表示取参数的小数部分，即 \[0,60] 的小数部分，包括 0.1,0.2....，1.1,1.2....如此循环
+
+*   `st` 变量表示 UV 坐标的分数部分。我们使用 `vUv * rows` 对网格进行缩放，形成网格块。
+
+*   `d1` 和 `d2` 使用 `step` 函数生成边界效果，控制哪些网格线显示为深色或浅色。
+
+*   `step` 函数是 `Shader` 中另一个很常用的函数，它就是一个阶梯函数。它的原理是：当 `step(a, b)` 中的 `b < a` 时，返回 `0`；当 `b >= a` 时，返回 `1`。即只有 `st.x < 0.9` 和 `st.y  < 0.1 ` 时 `d1*d2` 是为 `1` 的，其他情况都为 `0` 。
+
+*   `d1*d2` 为 `1` 则绘制 `vec3(0.8)` ，否则绘制 `vec3(1.0)`。绘制白色和灰色，形成了网格效果
+
+#### 平面几何体和材质
+
+```typescript
+const geometry = new THREE.PlaneGeometry(2, 2);
+const material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+        rows: { value: 50.0 }, // 设置行数
+    },
+});
+const plane = new THREE.Mesh(geometry, material);
+scene.add(plane);
+```
+
+通过 `ShaderMaterial` 将着色器应用到一个平面上。`uniforms` 参数用于控制网格的行数。
+
+#### 渲染循环
+
+```typescript
+const animate = () => {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+};
+animate();
+```
+
+这是一个典型的渲染循环，用于保持动画更新。我们调用 `requestAnimationFrame` 以实现平滑的动画。
+
+#### 资源清理
+
+```typescript
+return () => {
+    renderer.dispose();
+    material.dispose();
+    geometry.dispose();
+    if (mountRef.current)
+        mountRef.current.removeChild(renderer.domElement);
+};
+```
+
+在组件卸载时，我们清理了 `renderer`、`material` 和 `geometry` 资源，以防止内存泄漏。
+
+### 运行效果
+
+在应用程序中引入 `ThreeJsGrid` 组件并渲染即可看到效果。调节 `rows` 的值，你可以控制网格的密度。
+
+![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/aaadd806c2824918b69d7b45e8294b87~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734229401&x-orig-sign=lWuEbHZgsSbVC7pwncAvNLOvTlU%3D)

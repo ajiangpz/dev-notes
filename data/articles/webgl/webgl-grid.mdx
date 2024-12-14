@@ -1,0 +1,208 @@
+---
+title: 使用 webgl 创建网格
+date: '2016-03-08'
+tags: ['WebGL', 'GLSL', 'React']
+draft: false
+summary: Example of a markdown file with code blocks and syntax highlighting
+---
+
+
+## 创建顶点着色器
+
+### 代码
+```glsl
+attribute vec2 a_vertexPosition;
+attribute vec2 uv;
+varying vec2 vUv;
+void main() {
+    gl_PointSize = 1.0;
+    vUv = uv;
+    gl_Position = vec4(a_vertexPosition, 1.0, 1.0);
+}
+```
+
+### 代码解析
+顶点着色器的作用是处理每个顶点的位置和属性信息，并将其传递给片元着色器。这里的顶点着色器包含以下几个主要部分：
+
+1. **输入属性（attribute）**:
+   - `a_vertexPosition`: 每个顶点的二维位置，用于在屏幕上确定其位置。
+   - `uv`: 顶点的 UV 纹理坐标，用于将纹理坐标传递给片元着色器。
+
+2. **传递变量（varying）**:
+   - `vUv`: 纹理坐标的传递变量，用于在片元着色器中确定每个像素的纹理坐标。
+
+3. **主函数（main）**:
+   - 设置 `gl_PointSize` 为 1.0（在这里没有特别作用）。
+   - 将 `uv` 传递给 `vUv`，将纹理坐标传递到片元着色器。
+   - 使用 `gl_Position` 设置顶点在屏幕上的位置，通过 `a_vertexPosition` 构建一个齐次坐标。这个坐标通过 `vec4(a_vertexPosition, 1.0, 1.0)` 设置，表示为二维坐标（x，y），并且假设视图深度值 `z` 和 `w` 均为 1.0。
+
+## 创建片元着色器
+
+### 代码
+```glsl
+precision mediump float;
+varying vec2 vUv;
+uniform float rows;
+void main() {
+    vec2 st = fract(vUv * rows);
+    float d1 = step(st.x, 0.9);
+    float d2 = step(0.1, st.y);
+    gl_FragColor = vec4(mix(vec3(0.8), vec3(1.0), d1 * d2), 1.0);
+}
+```
+
+### 代码解析
+片元着色器用于处理每个像素的颜色值。在此片元着色器中，我们实现了一个简单的网格效果。
+
+1. **精度声明（precision）**:
+   - `precision mediump float;` 表示使用中等精度处理浮点数。
+
+2. **传递变量（varying）和 uniform 变量**:
+   - `vUv`：从顶点着色器传递来的 UV 纹理坐标。
+   - `rows`：用于控制网格的行数。
+
+3. **主函数（main）**:
+   - `vec2 st = fract(vUv * rows);`：使用 `fract` 函数将 UV 坐标映射到 `[0, 1]` 范围。`vUv * rows` 将纹理坐标乘以行数，这样可以根据 `rows` 控制每行和列的宽度。
+   - `float d1 = step(st.x, 0.9);`：通过 `step` 函数将 `st.x` 大于 `0.9` 的位置设置为 0，形成垂直网格线。
+   - `float d2 = step(0.1, st.y);`：使用 `step` 函数将 `st.y` 小于 `0.1` 的位置设置为 0，形成水平网格线。
+   - `gl_FragColor = vec4(mix(vec3(0.8), vec3(1.0), d1 * d2), 1.0);`：使用 `mix` 函数将颜色在 0.8 和 1.0 之间混合，从而产生网格效果的颜色。
+
+## 编译着色器
+
+### 代码
+```javascript
+const compileShader = (source, type) => {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+};
+
+const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
+const fragmentShader = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+```
+
+### 代码解析
+`compileShader` 函数用于编译着色器，接收着色器代码字符串和着色器类型（顶点或片元）。编译成功后返回着色器对象，失败则打印错误信息。
+
+- `gl.createShader(type)`: 创建新的着色器对象。
+- `gl.shaderSource(shader, source)`: 将 GLSL 代码传递给着色器。
+- `gl.compileShader(shader)`: 编译着色器。
+- `gl.getShaderParameter(shader, gl.COMPILE_STATUS)`: 检查编译是否成功。失败则输出错误日志并删除着色器对象。
+
+## 链接着色器
+
+### 代码
+```javascript
+const program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('Program link error:', gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return;
+}
+gl.useProgram(program);
+```
+
+### 代码解析
+链接着色器的步骤包括创建程序对象、附加顶点和片元着色器、链接程序、并激活程序。
+
+- `gl.createProgram()`: 创建一个新的程序对象。
+- `gl.attachShader(program, vertexShader/fragmentShader)`: 将顶点和片元着色器附加到程序。
+- `gl.linkProgram(program)`: 链接程序。此步骤将着色器代码连接为一个完整的可执行程序。
+- `gl.getProgramParameter(program, gl.LINK_STATUS)`: 检查链接状态，失败则输出错误日志。
+- `gl.useProgram(program)`: 使用程序对象。
+
+## 定义顶点坐标和纹理坐标，传入缓冲区
+
+### 代码
+```javascript
+const vertices = new Float32Array([
+    -1.0, -1.0,
+    1.0, -1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    1.0, 1.0,
+    -1.0, 1.0,
+]);
+
+const uvs = new Float32Array([
+    0.0, 0.0,
+    1.0, 0.0,
+    0.0, 1.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+]);
+
+// 顶点缓冲区
+const vertexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+const aVertexPosition = gl.getAttribLocation(program, 'a_vertexPosition');
+gl.enableVertexAttribArray(aVertexPosition);
+gl.vertexAttribPointer(aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+
+// UV 缓冲区
+const uvBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, uvs, gl.STATIC_DRAW);
+const uvLocation = gl.getAttribLocation(program, 'uv');
+gl.enableVertexAttribArray(uvLocation);
+gl.vertexAttribPointer(uvLocation, 2, gl.FLOAT, false, 0, 0);
+```
+
+### 代码解析
+- 定义 `vertices` 和 `uvs` 数组，用于指定每个顶点的坐标和纹理坐标。
+- 使用 `gl.createBuffer()` 创建缓冲区，传递顶点和 UV 坐标数据。
+- 设置 `gl.vertexAttribPointer` 将缓冲区数据绑定到着色器中的 `a_vertexPosition` 和 `uv` 属性。
+
+## 设置 uniform 变量
+
+### 代码
+```javascript
+const rowsLocation = gl.getUniformLocation(program, 'rows');
+gl.uniform1f(rowsLocation, 50.0);
+```
+
+### 代码解析
+通过 `gl.getUniformLocation` 获取 `rows` uniform 变量的地址，然后使用 `gl.uniform1f` 将其设置为 50.0，这样可以动态控制网格行数。
+
+## 绘制
+
+### 代码
+```javascript
+gl.clearColor(0, 0, 0, 1);
+gl.clear(gl.COLOR_BUFFER_BIT);
+gl.drawArrays(gl.TRIANGLES, 0, 6);
+```
+
+### 代码解析
+- `gl.clearColor(0, 0, 0, 1)`: 设置背景颜色。
+- `gl.clear(gl.COLOR_BUFFER_BIT)`: 清空画布。
+- `gl.drawArrays(gl.TRIANGLES, 0, 6)`: 以三角形绘制 6 个顶点（两个三角形拼成一个矩形）。
+
+## 删除资源
+
+### 代码
+```javascript
+return () => {
+
+
+    gl.deleteProgram(program);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    gl.deleteBuffer(vertexBuffer);
+    gl.deleteBuffer(uvBuffer);
+};
+```
+
+### 代码解析
+清理 WebGL 资源，防止内存泄漏。
