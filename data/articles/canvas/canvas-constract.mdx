@@ -1,10 +1,11 @@
 ---
 title: 使用 Canvas 绘制图片并添加对比色文本
-date: '2016-03-08'
-tags: ['markdown', 'code', 'features']
+date: "2016-03-08"
+tags: ["canvas"]
 draft: false
-summary: Example of a markdown file with code blocks and syntax highlighting
+summary:
 ---
+
 ### 在 React 中使用 Canvas 绘制图片并添加对比色文本
 
 在这篇博客中，我们将学习如何在 React 中使用 Canvas 绘制图片、处理图片数据，并根据图片的顶部颜色生成对比色，以便在图片顶部添加清晰易读的文字。这个项目适合对前端图形处理和 Canvas 有兴趣的开发者，特别是那些需要在项目中应用图像处理和文字叠加的场景。
@@ -20,15 +21,15 @@ summary: Example of a markdown file with code blocks and syntax highlighting
 
 ### 技术点
 
-*   **Canvas API**：用于图像绘制和图像数据处理。
-*   **React Hooks**：使用 `useRef` 和 `useEffect` 管理 Canvas 和异步操作。
-*   **对比色计算**：通过亮度计算来确定文本的最佳对比色。
+- **Canvas API**：用于图像绘制和图像数据处理。
+- **React Hooks**：使用 `useRef` 和 `useEffect` 管理 Canvas 和异步操作。
+- **对比色计算**：通过亮度计算来确定文本的最佳对比色。
 
 ### 实现步骤
 
 #### 1. 创建项目结构
 
-在 React 项目中创建一个新的组件文件 `Page.tsx`  ，并定义基本结构：
+在 React 项目中创建一个新的组件文件 `Page.tsx` ，并定义基本结构：
 
 ```typescript
 "use client";
@@ -41,13 +42,13 @@ import React, { useEffect, useRef } from "react";
 
 ```typescript
 function loadImage(url: string) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-    });
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
 }
 ```
 
@@ -57,26 +58,29 @@ function loadImage(url: string) {
 
 ```typescript
 function getTopColor(imageData: ImageData) {
-    const { data, width, height } = imageData;
-    const topHeight = Math.floor(height * 0.1);
+  const { data, width, height } = imageData;
+  const topHeight = Math.floor(height * 0.1);
 
-    let rTotal = 0, gTotal = 0, bTotal = 0, pixelCount = 0;
+  let rTotal = 0,
+    gTotal = 0,
+    bTotal = 0,
+    pixelCount = 0;
 
-    for (let y = 0; y < topHeight; y++) {
-        for (let x = 0; x < width; x++) {
-            const index = (y * width + x) * 4;
-            rTotal += data[index];
-            gTotal += data[index + 1];
-            bTotal += data[index + 2];
-            pixelCount++;
-        }
+  for (let y = 0; y < topHeight; y++) {
+    for (let x = 0; x < width; x++) {
+      const index = (y * width + x) * 4;
+      rTotal += data[index];
+      gTotal += data[index + 1];
+      bTotal += data[index + 2];
+      pixelCount++;
     }
+  }
 
-    const rAvg = rTotal / pixelCount;
-    const gAvg = gTotal / pixelCount;
-    const bAvg = bTotal / pixelCount;
+  const rAvg = rTotal / pixelCount;
+  const gAvg = gTotal / pixelCount;
+  const bAvg = bTotal / pixelCount;
 
-    return { r: Math.round(rAvg), g: Math.round(gAvg), b: Math.round(bAvg) };
+  return { r: Math.round(rAvg), g: Math.round(gAvg), b: Math.round(bAvg) };
 }
 ```
 
@@ -84,15 +88,14 @@ function getTopColor(imageData: ImageData) {
 
 为了确保文字在图片上具有清晰的对比度，我们可以根据顶部颜色的亮度来选择对比色。亮度公式如下：
 
-$$ brightness  = 0.299 \times R + 0.587 \times G + 0.114 \times B $$
-
+$$ brightness = 0.299 \times R + 0.587 \times G + 0.114 \times B $$
 
 如果亮度较高，则使用黑色作为对比色；如果亮度较低，则使用白色。代码如下：
 
 ```typescript
 function getContrastColor({ r, g, b }: { r: number; g: number; b: number }) {
-    const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-    return brightness > 128 ? 'black' : 'white';
+  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+  return brightness > 128 ? "black" : "white";
 }
 ```
 
@@ -102,40 +105,42 @@ function getContrastColor({ r, g, b }: { r: number; g: number; b: number }) {
 
 ```typescript
 export default function Page() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-        (async function () {
-            const canvas = canvasRef.current;
-            if (!canvas) return;
+  useEffect(() => {
+    (async function () {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-            const context = canvas.getContext("2d");
-            const img = await loadImage("https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D");
+      const context = canvas.getContext("2d");
+      const img = await loadImage(
+        "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
+      );
 
-            canvas.width = img.width;
-            canvas.height = img.height;
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-            const imageData = context?.getImageData(0, 0, img.width, img.height);
-            if (!imageData) return;
+      const imageData = context?.getImageData(0, 0, img.width, img.height);
+      if (!imageData) return;
 
-            const topColor = getTopColor(imageData);
-            const contrastColor = getContrastColor(topColor);
+      const topColor = getTopColor(imageData);
+      const contrastColor = getContrastColor(topColor);
 
-            context.putImageData(imageData, 0, 0);
+      context.putImageData(imageData, 0, 0);
 
-            // 设置文本样式并绘制到顶部
-            context.font = "24px Arial";
-            context.fillStyle = contrastColor;
-            context.textAlign = "center";
-            context.fillText("Sample Text at Top", canvas.width / 2, 30);
-        })();
-    }, []);
+      // 设置文本样式并绘制到顶部
+      context.font = "24px Arial";
+      context.fillStyle = contrastColor;
+      context.textAlign = "center";
+      context.fillText("Sample Text at Top", canvas.width / 2, 30);
+    })();
+  }, []);
 
-    return (
-        <div>
-            <canvas id="canvas" ref={canvasRef}></canvas>
-        </div>
-    );
+  return (
+    <div>
+      <canvas id="canvas" ref={canvasRef}></canvas>
+    </div>
+  );
 }
 ```
 

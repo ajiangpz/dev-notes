@@ -1,11 +1,10 @@
 ---
 title: 使用 React 和 WebGL 绘制三角形
-date: '2016-03-08'
-tags: ['WebGL', 'GLSL', 'React']
+date: "2016-03-08"
+tags: ["WebGL", "GLSL", "React"]
 draft: false
-summary: Example of a markdown file with code blocks and syntax highlighting
+summary:
 ---
-
 
 #### 1. 在 Next.js 中配置 `raw-loader`
 
@@ -24,7 +23,7 @@ const nextConfig = {
   webpack: (config) => {
     config.module.rules.push({
       test: /\.glsl$/,
-      use: 'raw-loader',
+      use: "raw-loader",
     });
     return config;
   },
@@ -47,7 +46,7 @@ import fragment from "./fragmentShader.glsl";
 
 export default function Triangle() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    
+
     useEffect(() => {
         if (canvasRef.current) {
             const gl = canvasRef.current.getContext("webgl2");
@@ -74,10 +73,10 @@ export default function Triangle() {
                 gl.attachShader(program, fragmentShader as WebGLShader);
                 gl.linkProgram(program);
                 gl.useProgram(program);
-                
+
                 // 定义顶点数据
                 const points = new Float32Array([0.0, 1.0, -1.0, -1.0, 1.0, -1.0]);
-                
+
                 // 将数据写入缓存区
                 const bufferId = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);

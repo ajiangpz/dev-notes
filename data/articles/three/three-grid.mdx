@@ -1,10 +1,11 @@
 ---
 title: 使用 Three.js 和 着色器绘制网格
-date: '2016-03-08'
-tags: ['Three.js', 'GLSL', 'React']
+date: "2016-03-08"
+tags: ["Three.js", "GLSL", "React"]
 draft: false
-summary: Example of a markdown file with code blocks and syntax highlighting
+summary:
 ---
+
 ### 使用 Three.js 和 React 创建动态网格效果
 
 在本文中，我们将学习如何使用 Three.js 和 React 创建一个动态网格效果。我们将使用 GLSL（OpenGL Shading Language）编写自定义着色器，通过 Three.js 渲染一个二维的网格图案。本文示例是一个简单的项目，可以帮助你理解如何在 Three.js 中实现自定义着色器，并使用 React 管理渲染循环。
@@ -13,9 +14,9 @@ summary: Example of a markdown file with code blocks and syntax highlighting
 
 在开始之前，你需要了解以下技术：
 
-*   **React**：本项目使用 React 管理生命周期。
-*   **Three.js**：一个流行的 3D 渲染库，用于处理 WebGL 场景。
-*   **GLSL**：用于定义自定义着色器。我们将使用 GLSL 来控制网格的外观。
+- **React**：本项目使用 React 管理生命周期。
+- **Three.js**：一个流行的 3D 渲染库，用于处理 WebGL 场景。
+- **GLSL**：用于定义自定义着色器。我们将使用 GLSL 来控制网格的外观。
 
 ### 创建项目结构
 
@@ -23,27 +24,25 @@ summary: Example of a markdown file with code blocks and syntax highlighting
 
 ```typescript
 "use client";
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 function ThreeJsGrid() {
-    const mountRef = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        // 初始化场景、摄像机和渲染器
-        const scene = new THREE.Scene();
-        const camera = new THREE.OrthographicCamera(
-            -1, 1, 1, -1, 0.1, 10
-        );
-        camera.position.z = 1;
+  useEffect(() => {
+    // 初始化场景、摄像机和渲染器
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    camera.position.z = 1;
 
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(500, 500);
-        if (!mountRef.current) return;
-        mountRef.current.appendChild(renderer.domElement);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(500, 500);
+    if (!mountRef.current) return;
+    mountRef.current.appendChild(renderer.domElement);
 
-        // 定义着色器
-        const vertexShader = `
+    // 定义着色器
+    const vertexShader = `
           varying vec2 vUv;
           void main() {
             vUv = uv;
@@ -51,7 +50,7 @@ function ThreeJsGrid() {
           }
         `;
 
-        const fragmentShader = `
+    const fragmentShader = `
           precision mediump float;
           varying vec2 vUv;
           uniform float rows;
@@ -63,36 +62,35 @@ function ThreeJsGrid() {
           }
         `;
 
-        // 创建一个平面几何体并应用着色器
-        const geometry = new THREE.PlaneGeometry(2, 2);
-        const material = new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            uniforms: {
-                rows: { value: 50.0 }, // 设置网格的行数
-            },
-        });
-        const plane = new THREE.Mesh(geometry, material);
-        scene.add(plane);
+    // 创建一个平面几何体并应用着色器
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        rows: { value: 50.0 }, // 设置网格的行数
+      },
+    });
+    const plane = new THREE.Mesh(geometry, material);
+    scene.add(plane);
 
-        // 渲染循环
-        const animate = () => {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        };
-        animate();
+    // 渲染循环
+    const animate = () => {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    };
+    animate();
 
-        // 组件卸载时清理资源
-        return () => {
-            renderer.dispose();
-            material.dispose();
-            geometry.dispose();
-            if (mountRef.current)
-                mountRef.current.removeChild(renderer.domElement);
-        };
-    }, []);
+    // 组件卸载时清理资源
+    return () => {
+      renderer.dispose();
+      material.dispose();
+      geometry.dispose();
+      if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
+    };
+  }, []);
 
-    return <div ref={mountRef} />;
+  return <div ref={mountRef} />;
 }
 
 export default ThreeJsGrid;
@@ -104,9 +102,7 @@ export default ThreeJsGrid;
 
 ```typescript
 const scene = new THREE.Scene();
-const camera = new THREE.OrthographicCamera(
-    -1, 1, 1, -1, 0.1, 10
-);
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
 camera.position.z = 1;
 ```
 
@@ -127,8 +123,8 @@ mountRef.current.appendChild(renderer.domElement);
 
 在 Three.js 中，着色器可以极大地控制材质的显示效果。这里我们定义了两个着色器：
 
-*   **Vertex Shader**：用于将顶点映射到屏幕坐标。
-*   **Fragment Shader**：控制像素的颜色，生成我们想要的网格图案。
+- **Vertex Shader**：用于将顶点映射到屏幕坐标。
+- **Fragment Shader**：控制像素的颜色，生成我们想要的网格图案。
 
 ```glsl
 // 顶点着色器
@@ -156,30 +152,30 @@ const fragmentShader = `
 
 片段着色器中的关键部分如下：
 
-*   着色器是根据纹理坐标来绘制的，即 (0,0) 到 （1，1）之间的内容，默认就是一种颜色，现在gl\_FragColor 由 d1和d2控制，d1和d2根据纹理坐标变化。rows将纹理坐标放大了六十倍，得到 0到60之间到小数循环变化，d1和d2根据图中的x,y坐标变化，则着色器颜色随之变化。
+- 着色器是根据纹理坐标来绘制的，即 (0,0) 到 （1，1）之间的内容，默认就是一种颜色，现在 gl_FragColor 由 d1 和 d2 控制，d1 和 d2 根据纹理坐标变化。rows 将纹理坐标放大了六十倍，得到 0 到 60 之间到小数循环变化，d1 和 d2 根据图中的 x,y 坐标变化，则着色器颜色随之变化。
 
 ![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/2fc6007d186f490da572345fbef69e21~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgcHp6eg==:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTM4MDY0MjMzNjAyNjgxMyJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1734229401&x-orig-sign=JjA9XURINYnJeruqp4HGGv%2B38pE%3D)
 
-*   fract 函数表示取参数的小数部分，即 \[0,60] 的小数部分，包括 0.1,0.2....，1.1,1.2....如此循环
+- fract 函数表示取参数的小数部分，即 \[0,60] 的小数部分，包括 0.1,0.2....，1.1,1.2....如此循环
 
-*   `st` 变量表示 UV 坐标的分数部分。我们使用 `vUv * rows` 对网格进行缩放，形成网格块。
+- `st` 变量表示 UV 坐标的分数部分。我们使用 `vUv * rows` 对网格进行缩放，形成网格块。
 
-*   `d1` 和 `d2` 使用 `step` 函数生成边界效果，控制哪些网格线显示为深色或浅色。
+- `d1` 和 `d2` 使用 `step` 函数生成边界效果，控制哪些网格线显示为深色或浅色。
 
-*   `step` 函数是 `Shader` 中另一个很常用的函数，它就是一个阶梯函数。它的原理是：当 `step(a, b)` 中的 `b < a` 时，返回 `0`；当 `b >= a` 时，返回 `1`。即只有 `st.x < 0.9` 和 `st.y  < 0.1 ` 时 `d1*d2` 是为 `1` 的，其他情况都为 `0` 。
+- `step` 函数是 `Shader` 中另一个很常用的函数，它就是一个阶梯函数。它的原理是：当 `step(a, b)` 中的 `b < a` 时，返回 `0`；当 `b >= a` 时，返回 `1`。即只有 `st.x < 0.9` 和 `st.y  < 0.1 ` 时 `d1*d2` 是为 `1` 的，其他情况都为 `0` 。
 
-*   `d1*d2` 为 `1` 则绘制 `vec3(0.8)` ，否则绘制 `vec3(1.0)`。绘制白色和灰色，形成了网格效果
+- `d1*d2` 为 `1` 则绘制 `vec3(0.8)` ，否则绘制 `vec3(1.0)`。绘制白色和灰色，形成了网格效果
 
 #### 平面几何体和材质
 
 ```typescript
 const geometry = new THREE.PlaneGeometry(2, 2);
 const material = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
-    uniforms: {
-        rows: { value: 50.0 }, // 设置行数
-    },
+  vertexShader,
+  fragmentShader,
+  uniforms: {
+    rows: { value: 50.0 }, // 设置行数
+  },
 });
 const plane = new THREE.Mesh(geometry, material);
 scene.add(plane);
@@ -191,8 +187,8 @@ scene.add(plane);
 
 ```typescript
 const animate = () => {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 };
 animate();
 ```
@@ -203,11 +199,10 @@ animate();
 
 ```typescript
 return () => {
-    renderer.dispose();
-    material.dispose();
-    geometry.dispose();
-    if (mountRef.current)
-        mountRef.current.removeChild(renderer.domElement);
+  renderer.dispose();
+  material.dispose();
+  geometry.dispose();
+  if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
 };
 ```
 

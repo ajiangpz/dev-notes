@@ -1,9 +1,9 @@
 ---
 title: 使用 canvas 实现灰度化图片
-date: '2016-03-08'
-tags: ['canvas', 'react', 'features']
+date: "2016-03-08"
+tags: ["canvas"]
 draft: false
-summary: Example of a markdown file with code blocks and syntax highlighting
+summary:
 ---
 
 ### React 和 Canvas: 使用 ImageData 处理图片灰度化效果
@@ -19,17 +19,17 @@ summary: Example of a markdown file with code blocks and syntax highlighting
 import React, { useEffect, useRef } from "react";
 
 export default function Page() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-        // 主逻辑在此执行
-    }, []);
+  useEffect(() => {
+    // 主逻辑在此执行
+  }, []);
 
-    return (
-        <div>
-            <canvas id="canvas" ref={canvasRef}></canvas>
-        </div>
-    );
+  return (
+    <div>
+      <canvas id="canvas" ref={canvasRef}></canvas>
+    </div>
+  );
 }
 ```
 
@@ -48,13 +48,13 @@ export default function Page() {
 ```typescript
 // 加载图片并返回 HTMLImageElement
 function loadImage(url: string) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous"; // 允许跨域加载图片
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-    });
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // 允许跨域加载图片
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
 }
 ```
 
@@ -66,10 +66,10 @@ function loadImage(url: string) {
 
 ```typescript
 function drawImage(image: HTMLImageElement, canvas: HTMLCanvasElement) {
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-        ctx.drawImage(image, 0, 0); // 在 Canvas 上绘制图片
-    }
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.drawImage(image, 0, 0); // 在 Canvas 上绘制图片
+  }
 }
 ```
 
@@ -80,12 +80,15 @@ function drawImage(image: HTMLImageElement, canvas: HTMLCanvasElement) {
 为了进行灰度化处理，我们需要先从图片中获取像素数据。使用 `OffscreenCanvas` 来提取图片的 `ImageData` 数据，这样就不需要在 Canvas 上显示图片：
 
 ```typescript
-function getImageData(img: HTMLImageElement, rect: [number, number, number, number]) {
-    const canvas = new OffscreenCanvas(img.width, img.height); // 创建一个 OffscreenCanvas
-    const ctx = canvas.getContext("2d");
-    ctx?.drawImage(img, 0, 0); // 绘制图片
-    const imageData = ctx?.getImageData(...rect); // 获取指定区域的 ImageData
-    return imageData;
+function getImageData(
+  img: HTMLImageElement,
+  rect: [number, number, number, number]
+) {
+  const canvas = new OffscreenCanvas(img.width, img.height); // 创建一个 OffscreenCanvas
+  const ctx = canvas.getContext("2d");
+  ctx?.drawImage(img, 0, 0); // 绘制图片
+  const imageData = ctx?.getImageData(...rect); // 获取指定区域的 ImageData
+  return imageData;
 }
 ```
 
@@ -97,15 +100,15 @@ function getImageData(img: HTMLImageElement, rect: [number, number, number, numb
 
 ```typescript
 function traverseImageData(imageData: ImageData) {
-    for (let i = 0; i < imageData.data.length; i += 4) {
-        const r = imageData.data[i];
-        const g = imageData.data[i + 1];
-        const b = imageData.data[i + 2];
-        const avg = (r + g + b) / 3; // 计算 RGB 平均值
-        imageData.data[i] = avg;
-        imageData.data[i + 1] = avg;
-        imageData.data[i + 2] = avg;
-    }
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const r = imageData.data[i];
+    const g = imageData.data[i + 1];
+    const b = imageData.data[i + 2];
+    const avg = (r + g + b) / 3; // 计算 RGB 平均值
+    imageData.data[i] = avg;
+    imageData.data[i + 1] = avg;
+    imageData.data[i + 2] = avg;
+  }
 }
 ```
 
@@ -117,39 +120,41 @@ function traverseImageData(imageData: ImageData) {
 
 ```typescript
 export default function Page() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-        (async function () {
-            const canvas = canvasRef.current;
-            if (!canvas) return;
+  useEffect(() => {
+    (async function () {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-            const context = canvas.getContext("2d");
-            const img = await loadImage("https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D");
-            
-            // 设置 Canvas 尺寸以匹配图片尺寸
-            canvas.width = img.width;
-            canvas.height = img.height;  
-            
-            // 获取图片数据
-            const imageData = getImageData(img, [0, 0, img.width, img.height]);
-            if (!imageData) return;
+      const context = canvas.getContext("2d");
+      const img = await loadImage(
+        "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
+      );
 
-            // 应用灰度化
-            traverseImageData(imageData);
+      // 设置 Canvas 尺寸以匹配图片尺寸
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-            // 将修改后的数据重新绘制到 Canvas 上
-            if (context) {
-                context.putImageData(imageData, 0, 0);
-            }
-        })();
-    }, []);
+      // 获取图片数据
+      const imageData = getImageData(img, [0, 0, img.width, img.height]);
+      if (!imageData) return;
 
-    return (
-        <div>
-            <canvas id="canvas" ref={canvasRef}></canvas>
-        </div>
-    );
+      // 应用灰度化
+      traverseImageData(imageData);
+
+      // 将修改后的数据重新绘制到 Canvas 上
+      if (context) {
+        context.putImageData(imageData, 0, 0);
+      }
+    })();
+  }, []);
+
+  return (
+    <div>
+      <canvas id="canvas" ref={canvasRef}></canvas>
+    </div>
+  );
 }
 ```
 
