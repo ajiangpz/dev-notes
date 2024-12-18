@@ -13,7 +13,13 @@ import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
 
 const defaultLayout = 'PostLayout'
-const layouts = {
+interface Post {
+  layout: 'PostSimple' | 'PostLayout' | 'PostBanner';
+}
+type Layout = {
+  [x: string]: any;
+}
+const layouts:Layout = {
   PostSimple,
   PostLayout,
   PostBanner,
@@ -80,7 +86,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const slug = decodeURI(params.slug.join('/'))
   // Filter out drafts in production
   const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
-  const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
+  const postIndex = sortedCoreContents.findIndex((p:any) => p.slug === slug)
   if (postIndex === -1) {
     return notFound()
   }
@@ -102,7 +108,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
     }
   })
 
-  const Layout = layouts[post.layout || defaultLayout]
+  const Layout =post.layout? layouts[post.layout ]:defaultLayout;
 
   return (
     <>

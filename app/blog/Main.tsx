@@ -6,7 +6,7 @@ import NewsletterForm from 'pliny/ui/NewsletterForm'
 
 const MAX_DISPLAY = 5
 
-export default function Home({ posts }) {
+export default function Home({ posts}:{posts: any;}) {
   return (
     <>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -20,7 +20,7 @@ export default function Home({ posts }) {
         </div>
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
-          {posts.slice(0, MAX_DISPLAY).map((post) => {
+          {posts.slice(0, MAX_DISPLAY).map((post:any) => {
             const { slug, date, title, summary, tags } = post
             return (
               <li key={slug} className="py-12">
@@ -44,7 +44,7 @@ export default function Home({ posts }) {
                             </Link>
                           </h2>
                           <div className="flex flex-wrap">
-                            {tags.map((tag) => (
+                            {tags.map((tag:any) => (
                               <Tag key={tag} text={tag} />
                             ))}
                           </div>

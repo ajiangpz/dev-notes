@@ -61,7 +61,7 @@ export default function Triangle() {
                 // ???
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
                 gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.drawArrays(gl.TRIANGLES, 0, 6)
+                gl.drawArrays(gl.TRIANGLES, 0, 3);
             }
         }
     }, [])

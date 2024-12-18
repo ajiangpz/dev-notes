@@ -61,11 +61,11 @@ const computedFields: ComputedFields = {
 /**
  * Count the occurrences of all tags across blog posts and write to json file
  */
-function createTagCount(allBlogs) {
+function createTagCount(allBlogs: any) {
   const tagCount: Record<string, number> = {}
-  allBlogs.forEach((file) => {
+  allBlogs.forEach((file: any) => {
     if (file.tags && (!isProduction || file.draft !== true)) {
-      file.tags.forEach((tag) => {
+      file.tags.forEach((tag: string   ) => {
         const formattedTag = slug(tag)
         if (formattedTag in tagCount) {
           tagCount[formattedTag] += 1
@@ -78,7 +78,7 @@ function createTagCount(allBlogs) {
   writeFileSync('./app/blog/tag-data.json', JSON.stringify(tagCount))
 }
 
-function createSearchIndex(allBlogs) {
+function createSearchIndex(allBlogs: any) { 
   if (
     siteMetadata?.search?.provider === 'kbar' &&
     siteMetadata.search.kbarConfig.searchDocumentsPath
