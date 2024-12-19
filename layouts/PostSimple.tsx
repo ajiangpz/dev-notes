@@ -10,7 +10,7 @@ import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 
 interface LayoutProps {
-  content: CoreContent<Blog>
+  content: any
   children: ReactNode
   next?: { path: string; title: string }
   prev?: { path: string; title: string }
