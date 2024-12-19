@@ -103,7 +103,7 @@ function WebGLGrid() {
         };
     }, []);
 
-    return <canvas ref={canvasRef} width="500" height="500" />;
+    return <canvas ref={canvasRef} width="1024" height="512" />;
 }
 
 export default WebGLGrid;

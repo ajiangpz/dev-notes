@@ -29,7 +29,7 @@ export default function About() {
         scene.add(axesHelper);
 
         // texture 
-        const texture = new THREE.TextureLoader().load("/images/snow.png");
+        const texture = new THREE.TextureLoader().load("/images/snow.png");     
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(1, 1);

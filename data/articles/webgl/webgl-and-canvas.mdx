@@ -1,6 +1,6 @@
 ---
 title: 认识 Canvas 和 WebGL
-date: "2016-03-08"
+date: "2024-12-18"
 tags: ["WebGL", "GLSL", "React", "Canvas"]
 draft: false
 summary:
@@ -29,8 +29,8 @@ summary:
 要在 `canvas` 上绘图，我们需要获取绘图上下文。一般使用 2D 上下文 (`getContext('2d')`)，然后通过这个上下文调用各种绘图方法。
 
 ```javascript
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
 ```
 
 ### 3. 绘制基本图形
@@ -38,7 +38,7 @@ const ctx = canvas.getContext("2d");
 - **绘制矩形**
 
   ```javascript
-  ctx.fillStyle = "blue";
+  ctx.fillStyle = 'blue';
   ctx.fillRect(50, 50, 100, 100);
   ```
 
@@ -56,11 +56,15 @@ const ctx = canvas.getContext("2d");
   ```javascript
   ctx.beginPath();
   ctx.arc(150, 150, 50, 0, Math.PI * 2);
-  ctx.fillStyle = "red";
+  ctx.fillStyle = 'red';
   ctx.fill();
   ```
 
 ---
+
+### 4.图像处理
+- [灰度化图片](/blog/articles/canvas/canvas-gray)
+- [Canvas 绘制图片并添加对比色文本](/blog/articles/canvas/canvas-constract)
 
 ## 二、WebGL 入门
 
@@ -79,8 +83,8 @@ const ctx = canvas.getContext("2d");
 使用 `getContext('webgl')` 方法获取 WebGL 上下文：
 
 ```javascript
-const canvas = document.getElementById("webglCanvas");
-const gl = canvas.getContext("webgl");
+const canvas = document.getElementById('webglCanvas');
+const gl = canvas.getContext('webgl');
 
 if (!gl) {
   console.log("WebGL not supported, falling back on experimental-webgl");
@@ -116,12 +120,49 @@ function createShader(gl, type, source) {
 }
 
 const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-const fragmentShader = createShader(
-  gl,
-  gl.FRAGMENT_SHADER,
-  fragmentShaderSource
-);
+const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 ```
+
+` attribute vec2 position; `
+-   **含义**：`position` 是一个二维向量（`vec2`），表示顶点的坐标。
+
+-   **来源**：`attribute` 是用于从 CPU 传递给 GPU 顶点着色器的数据。它通常由用户通过 WebGL API 设置，比如通过缓冲区传递顶点数据。
+
+-   **数据类型**：二维向量（`vec2`），通常表示顶点在 2D 平面中的位置，例如 `(x, y)`。
+
+**`void main() `**
+
+-   **含义**：这是顶点着色器的主函数，GPU 会为每个顶点调用一次。
+
+ **`gl_Position = vec4(position, 0.0, 1.0);`**
+
+-   **作用**：定义顶点在裁剪空间的坐标。
+
+    -   `gl_Position` 是内建变量，表示顶点在裁剪空间中的坐标，是一个四维向量（`vec4`）。
+
+    -   `vec4(position, 0.0, 1.0)` 将二维的 `position` 转换为四维向量：
+
+        -   `x, y`：来自传入的 `position`。
+        -   `z = 0.0`：假设顶点位于 z=0 平面。
+        -   `w = 1.0`：用于齐次坐标的规范化。
+
+-   **结果**：将二维顶点坐标 `position` 映射到 OpenGL 的裁剪空间，其中 z 坐标为 `0.0`。
+
+
+**`precision mediump float;`**
+
+-   **含义**：定义浮点数的精度。
+
+    -   `precision`：用于指定变量（如 `float` 类型）的精度。
+    -   `mediump`：表示中等精度（medium precision）。
+
+-   **用途**：片段着色器中的浮点数计算可能影响最终渲染结果，因此需要明确指定精度。常用的精度有：
+
+    -   `lowp`：低精度，适合节能或性能优先的简单计算。
+    -   `mediump`：中等精度，适合大部分常规用途。
+    -   `highp`：高精度，通常用于需要高细节的效果（如 3D 渲染的深度计算等）。
+
+在片段着色器中，中等精度通常够用，尤其是对于颜色计算。
 
 ### 4. 创建着色器程序并绘制三角形
 
@@ -136,11 +177,11 @@ gl.useProgram(program);
 
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-gl.bufferData(
-  gl.ARRAY_BUFFER,
-  new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5]),
-  gl.STATIC_DRAW
-);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+  0, 0.5,
+  -0.5, -0.5,
+  0.5, -0.5
+]), gl.STATIC_DRAW);
 
 const positionLocation = gl.getAttribLocation(program, "position");
 gl.enableVertexAttribArray(positionLocation);
@@ -152,27 +193,59 @@ gl.uniform4f(colorLocation, 1.0, 0.0, 0.0, 1.0); // 红色
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.TRIANGLES, 0, 3);
 ```
+ **`gl.drawArrays`**
 
+-   **功能**：WebGL 的绘制函数，基于顶点缓冲区中的数据绘制图形。
+
+-   **签名**：
+
+    ```
+    gl.drawArrays(mode, first, count);
+    ```
+
+    -   `mode`：指定绘制的图元类型，例如点、线、三角形。
+    -   `first`：从顶点缓冲区中的哪个索引开始读取数据。
+    -   `count`：要绘制的顶点数量。
+
+* * *
+
+ **参数说明**
+
+```
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+```
+
+1.  **`gl.TRIANGLES`**
+
+    -   **含义**：绘制三角形。
+
+    -   **工作原理**：
+
+        -   每 3 个连续的顶点定义一个三角形。
+        -   如果顶点数量不是 3 的倍数，多余的顶点将被忽略。
+
+    -   **示例**：
+
+        -   如果缓冲区中有顶点数据 `[v0, v1, v2, v3, v4, v5]`：
+
+            -   第一个三角形：`[v0, v1, v2]`
+            -   第二个三角形：`[v3, v4, v5]`
+
+1.  **`0`**
+
+    -   **含义**：从顶点缓冲区的第一个顶点开始读取。
+    -   **作用**：指定从第 `0` 个顶点开始绘制。
+
+1.  **`3`**
+
+    -   **含义**：绘制 3 个顶点。
+
+    -   **作用**：
+
+        -   GPU 将读取缓冲区中的前 3 个顶点。
+        -   因为 `mode` 是 `gl.TRIANGLES`，这 3 个顶点将组成一个三角形。
 ---
 
-## 三、Canvas 和 WebGL 的区别与选择
+## 效果展示
 
-| 特性     | Canvas                 | WebGL                         |
-| -------- | ---------------------- | ----------------------------- |
-| 绘制维度 | 2D                     | 2D 和 3D                      |
-| 性能     | 适合简单图形，性能较低 | 硬件加速，高性能              |
-| 使用难度 | 简单，适合初学者       | 较复杂，适合需要高性能的项目  |
-| 适用场景 | 简单图表、动画         | 游戏、3D 数据可视化、复杂动画 |
-
-选择 `Canvas` 还是 `WebGL` 主要取决于项目需求：如果仅需绘制简单的图表或动画，可以选择 `Canvas`；如果需要绘制复杂的 3D 场景或高性能动画，则 `WebGL` 是更好的选择。
-
----
-
-## 四、进阶学习
-
-学习 `Canvas` 和 `WebGL` 的基础后，你可以逐步深入探索一些高级技术和工具：
-
-- **Canvas 高级技术**：掌握 `Canvas` API 的高级特性，如图像处理、动画优化、路径和文本处理等。
-- **WebGL 框架**：可以学习 `Three.js` 等 WebGL 框架，简化 3D 图形渲染工作，并进一步探索 `GLSL` 着色器编程。
-
-希望通过本教程，你能更好地理解 `Canvas` 和 `WebGL`，并灵活运用它们在网页中绘制图形。
+- [WebGL三角形](/projects/webgl-triangle)

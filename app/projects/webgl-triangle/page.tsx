@@ -53,19 +53,18 @@ export default function Triangle() {
                 // 绑定给 position 变量
                 // 获取 position 变量地址   
                 const vPosition = gl.getAttribLocation(program, 'position');
-                // 如何读取缓冲区中的数据
+                // 设置如何读取缓冲区中的数据
                 gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
                 // 开启
                 gl.enableVertexAttribArray(vPosition);
 
-                // ???
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
                 gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.drawArrays(gl.TRIANGLES, 0, 6)
+                gl.drawArrays(gl.TRIANGLES, 0, 3)
             }
         }
     }, [])
 
-    return (<canvas id="canvas" ref={canvasRef} width="500px" height="500px">Triangle</canvas>)
+    return (<canvas id="canvas" ref={canvasRef} width="1024" height="512">Triangle</canvas>)
 }
 

@@ -107,6 +107,6 @@ export default function Triangle() {
         }
     }, [])
 
-    return (<canvas id="canvas" ref={canvasRef} width="600" height="600">Triangle</canvas>)
+    return (<canvas id="canvas" ref={canvasRef} width="512" height="512">Triangle</canvas>)
 }
 

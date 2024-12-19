@@ -1,18 +1,15 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 
-// 加载图片并返回 HTMLImageElement
 function loadImage(url: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous"; // 允许跨域加载图片
+    img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = url;
   });
 }
-
-
 
 function getImageData(
   img: HTMLImageElement,
@@ -25,16 +22,35 @@ function getImageData(
   return imageData;
 }
 
-function traverseImageData(imageData: ImageData) {
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const r = imageData.data[i];
-    const g = imageData.data[i + 1];
-    const b = imageData.data[i + 2];
-    const avg = (r + g + b) / 3; // 计算 RGB 平均值
-    imageData.data[i] = avg;
-    imageData.data[i + 1] = avg;
-    imageData.data[i + 2] = avg;
+function getTopColor(imageData: ImageData) {
+  const { data, width, height } = imageData;
+  const topHeight = Math.floor(height * 0.1);
+
+  let rTotal = 0,
+    gTotal = 0,
+    bTotal = 0,
+    pixelCount = 0;
+
+  for (let y = 0; y < topHeight; y++) {
+    for (let x = 0; x < width; x++) {
+      const index = (y * width + x) * 4;
+      rTotal += data[index];
+      gTotal += data[index + 1];
+      bTotal += data[index + 2];
+      pixelCount++;
+    }
   }
+
+  const rAvg = rTotal / pixelCount;
+  const gAvg = gTotal / pixelCount;
+  const bAvg = bTotal / pixelCount;
+
+  return { r: Math.round(rAvg), g: Math.round(gAvg), b: Math.round(bAvg) };
+}
+
+function getContrastColor({ r, g, b }: { r: number; g: number; b: number }) {
+  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+  return brightness > 128 ? "black" : "white";
 }
 
 export default function Page() {
@@ -46,31 +62,31 @@ export default function Page() {
       if (!canvas) return;
 
       const context = canvas.getContext("2d");
-      const img = await loadImage(
-        "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
-      );
 
-      // 设置 Canvas 尺寸以匹配图片尺寸
+      const img = await loadImage("/images/light-theme.jpeg");
+
       canvas.width = img.width;
       canvas.height = img.height;
 
-      // 获取图片数据
       const imageData = getImageData(img, [0, 0, img.width, img.height]);
       if (!imageData) return;
 
-      // 应用灰度化
-      traverseImageData(imageData);
-
-      // 将修改后的数据重新绘制到 Canvas 上
+      const topColor = getTopColor(imageData);
+      const contrastColor = getContrastColor(topColor);
       if (context) {
         context.putImageData(imageData, 0, 0);
+
+        // 设置文本样式并绘制到顶部
+        context.font = "24px Arial";
+        context.fillStyle = contrastColor;
+        context.textAlign = "center";
+        context.fillText("Sample Text at Top", canvas.width / 2, 30);
       }
     })();
   }, []);
 
   return (
     <div>
-      <img src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" />
       <canvas id="canvas" ref={canvasRef}></canvas>
     </div>
   );
