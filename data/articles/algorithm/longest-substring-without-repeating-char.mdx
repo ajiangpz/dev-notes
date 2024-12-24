@@ -28,24 +28,13 @@ summary:
 解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
 
-
-
 # 思路
 
-1. **Map for Direct Lookup:**  
-   Using a `Map` for character indices allows direct jumps for the `left` pointer, avoiding the need to increment it one step at a time.
-
-2. **Skip Redundant Checks:**  
-   The `left` pointer is updated directly to the position after the duplicate character, skipping intermediate characters entirely.
-
-3. **Linear Time Complexity:**  
-   Both `left` and `right` pointers traverse the string at most once, resulting in \(O(n)\) time complexity.
-
-
-
+滑动窗口法，定义两个指针，作为左右边界，如果窗口中出现了重复字符，则移动左边界指针至该字符位置的下一位。如果没有则
+移动右边界指针，记录该字符的位置，更新最大子串长度
 
 ```javascript
-function fn(str) {
+function findLongestSubstringWithoutRepeatingCharacter(str) {
   let left = 0;
   let result = 0;
   let charIndexMap = new Map();
@@ -53,32 +42,16 @@ function fn(str) {
   for (let right = 0; right < str.length; right++) {
     const char = str[right];
 
-    // If the character is already in the map and its index is >= left,
-    // move the left pointer to skip duplicate characters.
+    // set left to the index in map if repeat
     if (charIndexMap.has(char) && charIndexMap.get(char) >= left) {
       left = charIndexMap.get(char) + 1;
     }
-
-    // Update the character's last seen index
+    // update char index
     charIndexMap.set(char, right);
 
-    // Update the result with the current window size
     result = Math.max(result, right - left + 1);
   }
 
   return result;
 }
 ```
-
-
-# Explanation of Steps:
-
-1. **Check for Duplicates:**  
-   If the character at `right` is already in the map and its stored index is within the current window (`>= left`), update `left` to skip over the duplicate.
-
-2. **Update Map:**  
-   Store the latest index of the character in the map to track its position.
-
-3. **Calculate Window Size:**  
-   Update `result` with the maximum window size (`right - left + 1`) after each iteration.
-
