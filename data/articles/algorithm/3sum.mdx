@@ -1,0 +1,49 @@
+---
+title: 三数之和
+date: "2024-12-26"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+找出数组中三个数和为0的所有组合，不能重复
+
+
+# 思路
+
+1.数组排序 2.遍历数组，定义双指针，左指针起始位置是 (i + 1) ，右指针起始位置是 (length - 1) 3.移动 left 和 right 指针，跳过重复值，找出三数之和为 0 的三个索引，加入结果中 4.如果大于 0，则移动右指针，否则移动左指针
+
+# 实现
+
+```js
+function three_sum(arr) {
+  let result = [];
+  if (arr.length < 3) return result;
+  // sort
+  arr.sort((a, b) => a - b);
+  // arr.length -2 signify no need to iterate the last 2 element because the left and the right has occupy
+  for (let i = 0; i < arr.length - 2; i++) {
+    // skip duplicate
+    if (i > 0 && arr[i] === arr[i - 1]) continue;
+    // init left
+    let left = i + 1;
+    let right = arr.length - 1;
+    while (left < right) {
+      let sum = arr[left] + arr[right] + arr[i];
+      if (sum === 0) {
+        result.push([arr[i], arr[left], arr[right]]);
+        left++;
+        right--;
+        while (left < right && arr[left] === arr[left - 1]) left++;
+        while (left < right && arr[right] === arr[right + 1]) right--;
+      } else if (sum > 0) {
+        right--;
+      } else {
+        left++;
+      }
+    }
+  }
+  return result;
+}
+```
