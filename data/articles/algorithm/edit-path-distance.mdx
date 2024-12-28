@@ -1,0 +1,48 @@
+---
+title: 编辑距离
+date: "2024-12-28"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 思路
+
+动态规划-dp 表
+
+# 实现
+
+```js
+var minDistance = function (s1, s2) {
+  var m = s1.length,
+    n = s2.length;
+  // 定义：s1[0..i] 和 s2[0..j] 的最小编辑距离是 dp[i+1][j+1]
+  var dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  // base case
+  for (var i = 1; i <= m; i++) dp[i][0] = i;
+  for (var j = 1; j <= n; j++) dp[0][j] = j;
+  // 自底向上求解
+  for (var i = 1; i <= m; i++) {
+    for (var j = 1; j <= n; j++) {
+      if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + 1
+        );
+      }
+    }
+  }
+  // 储存着整个 s1 和 s2 的最小编辑距离
+  return dp[m][n];
+};
+```
+
+# 解析
+![dp表](/images/dp.jpg)
+
+
+
+

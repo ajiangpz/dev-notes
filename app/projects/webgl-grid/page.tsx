@@ -77,8 +77,7 @@ function WebGLGrid() {
         gl.vertexAttribPointer(aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 
         // 设置 UV 缓冲区
-        const uvBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+        const uvBuffer = gl.createBuffer();0
         gl.bufferData(gl.ARRAY_BUFFER, uvs, gl.STATIC_DRAW);
         const uvLocation = gl.getAttribLocation(program, 'uv');
         gl.enableVertexAttribArray(uvLocation);
