@@ -1,0 +1,49 @@
+---
+title: 两数相加
+date: "2024-12-31"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+# 描述
+两个由单链表代表的数相加
+1->0->2
+2->1->2
+得到
+3->1->4
+# 思路
+
+1.初始化
+- 定义一个头部指针 head，方便简化链表操作
+- 定义指针 current，用于构建新的链表
+- 定义carry 表示相加后的进位数
+
+2.迭代加法
+- 同时遍历 l1 l2
+- 每一步计算 l1 l2 的和sum，计算sum 的个位数 sum%10 和进位数 sum/10
+- 生成新的链表节点，值为 sum%10 , 进位数的值 为 Math.floor(sum/10)
+
+
+3.最后进位数
+- 如果 l1 和 l2 都遍历完了，但需要进位，则需要再生成一个节点
+
+# 代码
+
+```js
+var addTwoNumbers = function (l1, l2) {
+  let head = new ListNode(0);
+  let current = head;
+  let carry = 0;
+  while (l1 !== null || l2 !== null || carry !== 0) {
+    let val1 = l1 !== null ? l1.val : 0;
+    let val2 = l2 !== null ? l2.val : 0;
+    let sum = val1 + val2 + carry;
+    carry = Math.floor(sum / 10);
+    current.next = new ListNode(sum % 10);
+    current = current.next;
+    if (l1 !== null) l1 = l1.next;
+    if (l2 !== null) l2 = l2.next;
+  }
+  return head.next;
+};
+```
