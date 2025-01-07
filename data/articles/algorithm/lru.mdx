@@ -1,0 +1,57 @@
+---
+title: LRU缓存
+date: "2024-01-07"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+
+一个包含有限元素的数据结构，当超过大小限制时，移除最少使用的元素
+
+# 实现
+
+```js
+/**
+ * @param {number} capacity
+ */
+var LRUCache = function (capacity) {
+  // 容量
+  this.capacity = capacity;
+  // 缓存map
+  this.cache = new Map();
+};
+
+/**
+ * @param {number} key
+ * @return {number}
+ */
+LRUCache.prototype.get = function (key) {
+  if (!this.cache.has(key)) {
+    return -1;
+  }
+  // 如果存在，需要重新set，更新位置
+  const value = this.cache.get(key);
+  this.cache.delete(key);
+  this.cache.set(key, value);
+  return value;
+};
+
+/**
+ * @param {number} key
+ * @param {number} value
+ * @return {void}
+ */
+LRUCache.prototype.put = function (key, value) {
+  if (this.cache.has(key)) {
+    this.cache.delete(key);
+  } else if (this.cache.size >= this.capacity) {
+    // 通过迭代器获取cache中最先put的元素
+    const leastUseKey = this.cache.keys().next().value;
+    this.cache.delete(leastUseKey);
+  }
+  // 更新位置
+  this.cache.set(key, value);
+};
+```
