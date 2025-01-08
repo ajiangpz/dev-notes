@@ -1,0 +1,36 @@
+---
+title: 盛最多水的容器
+date: "2024-01-08"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+给一个整数数组，表示柱子的高度，计算最多能盛多少水
+
+
+# 解法
+双指针法
+1.定义头尾两个指针
+2.计算两个指针间的容量， 更新最大容量
+3.计算完了，移动较小高度的指针，重复2，3
+
+```js
+var maxArea = function (height) {
+  let left = 0;
+  let right = height.length - 1;
+  let maxArea = 0;
+  while (left < right) {
+    let curArea = (right - left) * Math.min(height[left], height[right]);
+    maxArea = Math.max(maxArea, curArea);
+    if (height[left] < height[right]) {
+      left++;
+    } else {
+      right--;
+    }
+  }
+  return maxArea;
+};
+
+```
