@@ -1,0 +1,51 @@
+---
+title: 岛屿数量
+date: "2024-01-08"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+
+给出一个二维数组，1表示陆地，0表示水，找出其中所有的岛屿数量，一个岛屿是由水平和竖直方向的陆地组合成的。grid 周围都是水。
+
+
+
+# 思路
+
+DFS算法。找到 grid 中为1的元素，深度遍历其左右上下的元素，如果是1，则说明是同一个岛，则将该元素设置为0，表示已经遍历过了。
+
+
+# 代码
+
+```js
+var numIslands = function (grid) {
+  if (!grid || grid.length === 0) return 0;
+  const rows = grid.length;
+  const columns = grid[0].length;
+  let isLand = 0;
+  const dfs = (r, c) => {
+    if (r < 0 || r >= rows || c < 0 || c >= columns || grid[r][c] === "0")
+      return;
+
+    grid[r][c] = "0";
+    dfs(r + 1, c);
+    dfs(r - 1, c);
+    dfs(r, c + 1);
+    dfs(r, c - 1);
+  };
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      if (grid[r][c] === "1") {
+        isLand++;
+        dfs(r, c);
+      }
+    }
+  }
+
+  return isLand;
+};
+
+```
