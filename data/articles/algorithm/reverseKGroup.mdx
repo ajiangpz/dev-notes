@@ -1,0 +1,63 @@
+---
+title: K个一组翻转链表
+date: "2025-01-10"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+K个一组翻转链表
+
+
+# 实现
+
+```js
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var reverseKGroup = function (head, k) {
+  // 翻转函数
+  const reverse = (start, end) => {
+    let prev = null;
+    let current = start;
+    let next = null;
+
+    // 这里的end需要是k的下个node，因为第K个节点的next的指向需要翻转
+    while (current !== end) {
+      next = current.next;
+      current.next = prev;
+      prev = current;
+      current = next;
+    }
+    return prev;
+  };
+
+  // 声明一个空节点
+  let dummy = new ListNode();
+  dummy.next = head;
+  let groupPrev = dummy;
+  let groupStart = null;    
+  let groupEnd = null;
+  while (true) {
+    let kth = groupPrev;
+    for (let i = 0; i < k && kth; i++) {
+      kth = kth.next;
+    }
+    if (!kth) break;
+    groupStart = groupPrev.next;
+    groupEnd = kth.next;
+    let newGroupHead = reverse(groupStart, groupEnd);
+    // groupPrev 指向现在的头部
+    groupPrev.next = newGroupHead;
+    // 指向 groupEnd ,因为 groupEnd 没有变动，但是groupStart翻转了，因此他的next就是groupEnd
+    groupStart.next = groupEnd;
+    // 重新指定 prev节点为groupStart
+    groupPrev = groupStart;
+  }
+  // 返回 dummy.next 是因为不管如何翻转，dummy.next 永远指向链表头部
+  return dummy.next;
+};  
+```
