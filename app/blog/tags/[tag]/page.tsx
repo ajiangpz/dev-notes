@@ -61,7 +61,7 @@ export default async function TagPage(props: {
   const pagination = {
     currentPage: pageNumber,
     totalPages: Math.ceil(filteredPosts.length / POSTS_PER_PAGE),
-    currrentTag: tag
+    currentTag: tag
   };
   return (
     <ListLayout
@@ -69,7 +69,6 @@ export default async function TagPage(props: {
       title={title}
       initialDisplayPosts={initialDisplayPosts}
       pagination={pagination}
-      currrentTag={tag}
     />
   );
 }

@@ -66,7 +66,6 @@ export default async function TagPage(props: {
     totalPages: Math.ceil(filteredPosts.length / POSTS_PER_PAGE),
     currentTag: tag
   };
-  console.log(tag)
   return (
     <ListLayout
       posts={filteredPosts}

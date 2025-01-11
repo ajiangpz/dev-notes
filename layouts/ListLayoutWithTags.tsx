@@ -14,17 +14,16 @@ import tagData from "@/app/blog/tag-data.json";
 interface PaginationProps {
   totalPages: number;
   currentPage: number;
-  currrentTag: string;
+  currentTag: string;
 }
 interface ListLayoutProps {
   posts: any[];
   title: string;
   initialDisplayPosts?: any[];
   pagination?: PaginationProps;
-  currrentTag: string;
 }
 
-function Pagination({ totalPages, currentPage, currrentTag }: PaginationProps) {
+function Pagination({ totalPages, currentPage, currentTag }: PaginationProps) {
   const pathname = usePathname();
   const basePath = pathname.split("/").slice(1, 3).join("/");
   const prevPage = currentPage - 1 > 0;
@@ -43,11 +42,7 @@ function Pagination({ totalPages, currentPage, currrentTag }: PaginationProps) {
         )}
         {prevPage && (
           <Link
-            href={
-              currentPage - 1 === 1
-                ? `/${basePath}`
-                : `/${basePath}/${currrentTag}/page/${currentPage - 1}`
-            }
+            href={`/${basePath}/${currentTag}/page/${currentPage - 1}`}
             rel="prev"
           >
             Previous
@@ -65,7 +60,10 @@ function Pagination({ totalPages, currentPage, currrentTag }: PaginationProps) {
           </button>
         )}
         {nextPage && (
-          <Link href={`/${basePath}/${currrentTag}/page/${currentPage + 1}`} rel="next">
+          <Link
+            href={`/${basePath}/${currentTag}/page/${currentPage + 1}`}
+            rel="next"
+          >
             Next
           </Link>
         )}
@@ -78,7 +76,7 @@ export default function ListLayoutWithTags({
   posts,
   title,
   initialDisplayPosts = [],
-  pagination
+  pagination,
 }: ListLayoutProps) {
   const pathname = usePathname();
   const tagCounts = tagData as Record<string, number>;
@@ -112,7 +110,7 @@ export default function ListLayoutWithTags({
                 </Link>
               )}
               <ul>
-                {sortedTags.map(t => {
+                {sortedTags.map((t) => {
                   return (
                     <li key={t} className="my-3">
                       {decodeURI(pathname.split("/tags/")[1]) === slug(t) ? (
@@ -136,7 +134,7 @@ export default function ListLayoutWithTags({
           </div>
           <div>
             <ul>
-              {displayPosts.map(post => {
+              {displayPosts.map((post) => {
                 const { path, date, title, summary, tags } = post;
                 return (
                   <li key={path} className="py-5">
@@ -178,7 +176,7 @@ export default function ListLayoutWithTags({
               <Pagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
-                currrentTag={pagination.currrentTag}
+                currentTag={pagination.currentTag}
               />
             )}
           </div>
