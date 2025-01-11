@@ -42,7 +42,11 @@ function Pagination({ totalPages, currentPage, currentTag }: PaginationProps) {
         )}
         {prevPage && (
           <Link
-            href={`/${basePath}/${currentTag}/page/${currentPage - 1}`}
+            href={
+              currentTag === ""
+                ? `/${basePath}/page/${currentPage - 1}`
+                : `/${basePath}/${currentTag}/page/${currentPage - 1}`
+            }
             rel="prev"
           >
             Previous
@@ -61,7 +65,11 @@ function Pagination({ totalPages, currentPage, currentTag }: PaginationProps) {
         )}
         {nextPage && (
           <Link
-            href={`/${basePath}/${currentTag}/page/${currentPage + 1}`}
+            href={
+              currentTag === ""
+                ? `/${basePath}/page/${currentPage + 1}`
+                : `/${basePath}/${currentTag}/page/${currentPage + 1}`
+            }
             rel="next"
           >
             Next
