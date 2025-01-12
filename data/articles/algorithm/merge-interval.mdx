@@ -1,0 +1,41 @@
+---
+title: 合并区间
+date: "2025-01-12"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+
+合并多个区间
+
+# 思路
+
+声明一个数组返回结果，先排序，如果区间之间重叠，则更新前面的区间，否则，增加区间
+
+# 实现
+
+```js
+var merge = function (intervals) {
+  if (intervals.length <= 1) return intervals;
+  // 排序
+  intervals.sort((a, b) => a[0] - b[0]);
+  let merged = [intervals[0]];
+  for (let i = 1; i < intervals.length; i++) {
+    // 两个两个合并
+    const prev = merged[merged.length - 1];
+    const current = intervals[i];
+
+    // 如果有交集，则取最大值，更新 prev的最大值
+    if (current[0] <= prev[1]) {
+      prev[1] = Math.max(prev[1], current[1]);
+    }
+    // 没有交集，直接增加区间
+    else {
+      merged.push(current);
+    }
+  }
+  return merged;
+};
+```
