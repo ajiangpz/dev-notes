@@ -1,0 +1,52 @@
+---
+title: 螺旋矩阵Ⅱ
+date: "2025-01-13"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+生成螺旋矩阵
+
+# 实现
+
+```js
+var generateMatrix = function (n) {
+  let result = Array.from({ length: n }).map(() => Array(n).fill(1));
+  let left = 0,
+    right = n - 1,
+    top = 0,
+    bottom = n - 1;
+  let count = 1;
+  while (left <= right && top <= bottom) {
+    // left to right
+    for (let i = left; i <= right; i++) {
+      result[top][i] = count++;
+    }
+    top++;
+    // top to bottom
+    for (let i = top; i <= bottom; i++) {
+      result[i][right] = count++;
+    }
+    right--;
+    // if has rows
+    if (top <= bottom) {
+      for (let i = right; i >= left; i--) {
+        result[bottom][i] = count++;
+      }
+      bottom--;
+    }
+
+    // if has columns
+    if (left <= right) {
+      for (let i = bottom; i >= top; i--) {
+        result[i][left] = count++;
+      }
+      left++;
+    }
+  }
+
+  return result;
+};
+```

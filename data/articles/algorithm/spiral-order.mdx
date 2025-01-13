@@ -1,0 +1,58 @@
+---
+title: 螺旋矩阵
+date: "2025-01-13"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+螺旋式遍历巨震
+
+# 实现
+```js
+var spiralOrder = function (matrix) {
+  if (matrix.length < 1) return [];
+  let result = [],
+    top = 0,
+    left = 0,
+    // 列数
+    right = matrix[0].length - 1;
+  // 行数
+  bottom = matrix.length - 1;
+
+  while (left <= right && top <= bottom) {
+    // left to right
+    for (let i = left; i <= right; i++) {
+      result.push(matrix[top][i]);
+    }
+    top++;
+
+    // top to bottom
+
+    for (let i = top; i <= bottom; i++) {
+      result.push(matrix[i][right]);
+    }
+    right--;
+
+    // right to left
+    // top <= bottom 说明有两行，还需要从右到左遍历
+    if (top <= bottom) {
+      for (let i = right; i >= left; i--) {
+        result.push(matrix[bottom][i]);
+      }
+      bottom--;
+    }
+
+    // bottom to top
+    // left <= right 说明有两列，还需要从下到上遍历
+    if (left <= right) {
+      for (let i = bottom; i >= top; i--) {
+        result.push(matrix[i][left]);
+      }
+      left++;
+    }
+  }
+  return result;
+};
+```
