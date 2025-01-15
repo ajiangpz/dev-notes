@@ -1,4 +1,3 @@
-````markdown
 # 捡瓶子的个人博客
 
 基于 Next.js 实现，通过 Vercel 自动部署，分享关于算法、可视化以及日常总结的内容。
@@ -25,7 +24,6 @@
    git clone https://github.com/your-username/your-repo-name.git
    cd your-repo-name
    ```
-````
 
 2. 安装依赖：
 
