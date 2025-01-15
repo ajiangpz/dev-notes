@@ -1,0 +1,25 @@
+---
+title: 买卖股票的最佳时机
+date: "2025-01-15"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 思路
+在遍历过程中，更新最小值，同时更新最大收益
+
+# 实现
+```js
+var maxProfit = function (prices) {
+  if (prices.length === 0) return 0;
+  let minPrice = prices[0];
+  let maxProfit = 0;
+  for (let price of prices) {
+    minPrice = Math.min(price, minPrice);
+    maxProfit = Math.max(price - minPrice, maxProfit);
+  }
+  return maxProfit;
+};
+
+```

@@ -1,0 +1,36 @@
+---
+title: 最长连续序列
+date: "2025-01-15"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+给出一个整数数组，找出最长的连续序列，如 1,2,3,4,5
+
+
+# 实现
+```js
+var longestConsecutive = function (nums) {
+  if (nums.length === 0) return 0;
+  // 去重处理
+  const numsSet = new Set(nums);
+  if (numsSet.size === 1) return 1;
+  let longestCons = 1;
+
+  for (let num of numsSet) {
+    // !!!只有当num是连续序列的第一个才开始计数，避免重复计算
+    if (!numsSet.has(num - 1)) {
+      let currentNum = num;
+      let currentCons = 1;
+      while (numsSet.has(currentNum + 1)) {
+        currentCons++;
+        currentNum++;
+      }
+      longestCons = Math.max(longestCons, currentCons);
+    }
+  }
+  return longestCons;
+};
+```
