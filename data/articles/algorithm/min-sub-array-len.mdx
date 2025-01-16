@@ -1,0 +1,34 @@
+---
+title: 长度最小的子数组
+date: "2025-01-16"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 描述
+找出整数数组中和为target的最小长度数组
+
+
+# 思路
+滑动窗口法
+
+# 实现
+
+```js
+var minSubArrayLen = function (target, nums) {
+  let len = nums.length;
+  let left = 0;
+  let minLength = Infinity;
+  let currentSum = 0;
+  for (let right = 0; right < len; right++) {
+    currentSum += nums[right];
+    while (currentSum >= target) {
+      minLength = Math.min(minLength, right - left + 1);
+      currentSum -= nums[left];
+      left++;
+    }
+  }
+  return minLength === Infinity ? 0 : minLength;
+};
+```
