@@ -1,0 +1,67 @@
+---
+title: 数组中的第K个最大元素
+tags: [algorithm, array, sort]
+summary: 数组中的第K个最大元素
+date: 2025-01-16
+---
+
+## 题目
+
+[215. 数组中的第K个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/)
+
+## 解法
+
+### 解法一：排序
+
+
+```js
+function findKthLargest(nums, k) {
+  const n = nums.length;
+  // 第k大，就是第n-k小
+  k = n - k;
+  // 快速排序
+  const quickSort = (l, r) => {
+    // 如果l和r相等，说明已经排序完成   
+    if (l === r) return nums[l];
+    // 初始化i和j
+    let [i, j] = [l - 1, r + 1];
+    // 取中间值
+    let x = nums[(l + r) >> 1];
+    // 当i小于j时，继续排序
+    while (i < j) { 
+      // 从左到右找到第一个大于x的元素
+      while (nums[++i] < x);
+      // 从右到左找到第一个小于x的元素
+      while (nums[--j] > x);
+      // 如果i小于j，交换nums[i]和nums[j]
+      if (i < j) {
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+      }
+    }
+
+    // 如果j小于k，说明第k大的元素在右边
+    if (j < k) {
+      return quickSort(j + 1, r);
+    }
+    // 如果j大于等于k，说明第k大的元素在左边
+    return quickSort(l, j);
+  };
+  return quickSort(0, n - 1);
+}
+```
+
+## 解法二：堆排序
+
+```js
+function findKthLargest(nums, k): number {
+    const minQ = new MinPriorityQueue();
+    for (const x of nums) {
+        minQ.enqueue(x);
+        if (minQ.size() > k) {
+            minQ.dequeue();
+        }
+    }
+    return minQ.front().element;
+}
+
+```
