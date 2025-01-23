@@ -1,0 +1,65 @@
+---
+title: 分割回文串
+description: 分割回文串
+tags: ["algorithm"]
+draft: false
+summary: 分割回文串
+---
+
+## 题目
+
+给你一个字符串 s，请你将 s 分割成一些子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+
+回文串 是正着读和反着读都一样的字符串。
+
+## 示例
+
+```
+输入：s = "aab"
+输出：[["a","a","b"],["aa","b"]]
+```
+
+## 解题思路
+
+1. 动态规划
+2. 回溯
+
+
+```js
+var partition = function (s) {
+    // 回溯方法
+
+    const n = s.length;
+    const dp = Array.from({ length: n }, () => Array(n).fill(false));
+    const result = [];
+    const path = [];
+
+    // 初始化dp数组
+    for (let length = 1; length <= n; length++) { // 子串长度
+        for (let i = 0; i <= n - length; i++) {
+            const j = i + length - 1;
+            if (s[i] === s[j]) {
+                dp[i][j] = length <= 2 || dp[i + 1][j - 1];
+            }
+        }
+    }
+
+    // 回溯方法
+    function backtrack(start) {
+        if (start === n) {
+            result.push([...path]);
+            return;
+        }
+        for (let end = start; end < n; end++) {
+            if (dp[start][end]) {
+                path.push(s.slice(start, end + 1)); // 将回文子串加入路径
+                backtrack(end + 1); // 递归处理剩余部分
+                path.pop(); // 回溯
+            }
+        }
+    }
+
+    backtrack(0);
+    return result;
+};
+```
