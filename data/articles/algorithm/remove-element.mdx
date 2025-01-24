@@ -1,0 +1,36 @@
+---
+title: 移除链表元素
+date: "2025-01-24"
+tags: ["algorithm", "linked-list"]
+draft: false
+summary: 删除链表中等于给定值的所有节点
+---
+
+# 203.移除链表元素
+
+## 题目描述
+
+给你一个链表的头节点 `head` 和一个整数 `val` ，请你删除链表中所有满足 `Node.val == val` 的节点，并返回新的头节点。
+
+## 解题思路
+
+1. 使用虚拟头节点(dummy node)简化边界情况处理
+2. 遍历链表，遇到值为val的节点时跳过该节点
+3. 返回dummy.next作为新的头节点
+
+## 代码实现 
+
+```js
+var removeElements = function (head, val) {
+    let dummy = new ListNode(0, head);
+    let cur = dummy;
+    while (cur.next) {
+        if (cur.next.val === val) {
+            cur.next = cur.next.next
+        } else {
+            cur = cur.next;
+        }
+    }
+    return dummy.next;
+};
+```
