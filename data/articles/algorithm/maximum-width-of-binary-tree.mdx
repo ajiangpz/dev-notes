@@ -1,0 +1,68 @@
+---
+title: 二叉树最大宽度
+date: "2025-02-06"
+tags: ["algorithm"]
+draft: false
+summary:
+---
+
+# 题目描述
+
+给定一个二叉树，编写一个函数来获取这个树的最大宽度。树的宽度是所有层中的最大宽度。这个二叉树与满二叉树（full binary tree）结构相同，但一些节点为空。
+
+示例 1：
+
+输入：
+
+```
+    1
+   / \
+  3   2
+ / \   \
+4   5   6
+```
+
+输出：
+
+```
+4
+
+```
+
+# 思路
+
+- 使用广度优先搜索（BFS）来遍历二叉树，并记录每一层的宽度。
+- 使用一个队列来存储当前层的节点和它们在满二叉树中的位置。
+- 在遍历每一层时，计算当前层的宽度，并更新最大宽度。
+- 在遍历过程中，将下一层的节点和它们在满二叉树中的位置存储在队列中。
+- 最终返回最大宽度。
+
+# 代码实现
+
+```
+var widthOfBinaryTree = function (root) {
+  if (!root) return 0;
+  let maxWidth = 0n; // 使用 BigInt 类型
+  let queue = [[root, 0n]]; // 初始位置为 BigInt
+
+  while (queue.length) {
+    const levelSize = queue.length;
+    const left = queue[0][1]; // 当前层最左位置
+    const right = queue[levelSize - 1][1]; // 当前层最右位置
+    const width = right - left + 1n;
+    if (width > maxWidth) maxWidth = width;
+
+    // 生成下一层队列
+    const nextQueue = [];
+    for (const [node, x] of queue) {
+      if (node.left) nextQueue.push([node.left, x * 2n]); // BigInt 运算
+      if (node.right) nextQueue.push([node.right, x * 2n + 1n]);
+    }
+    queue = nextQueue;
+  }
+
+  return Number(maxWidth); // 最终转回 Number
+};
+
+
+```
