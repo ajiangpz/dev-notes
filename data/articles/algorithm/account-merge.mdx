@@ -1,0 +1,130 @@
+---
+title: 721. 账户合并
+date: 2025-02-10
+tags: ["union-find"]
+draft: false
+summary:
+---
+
+## 721. 账户合并
+
+## 描述
+
+给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，表示一个账户的邮箱列表。
+
+如果两个邮箱属于同一个账户，则认为它们属于同一个账户。
+
+请合并账户，并返回合并后的账户，每个账户的邮箱列表用字典序排列，账户按字典序排列。
+
+
+## 示例
+
+```
+输入：accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+输出：[["John", "john00@mail.com", "john_newyork@mail.com", "johnsmith@mail.com"], ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+解释：
+第一个和第三个 John 是同一个人，因为他们有共同的邮箱地址 "johnsmith@mail.com"。
+第二个 John 是单独一个人，因为他没有与其他人共享的邮箱地址。
+最后，Mary 是单独一个人，因为她有唯一的邮箱地址 "mary@mail.com"。
+```
+
+
+## 提示
+
+- 0 <= accounts.length <= 1000
+- 1 <= accounts[i].length <= 10
+- 1 <= accounts[i][j].length <= 30
+
+
+## 解题思路
+
+1.初始化 parent 数组，p[0] = 0, p[1] = 1, p[2] = 2, 表示每个账户的根
+2.遍历每个账户，如果邮箱已经存在，则合并账户，即设置 parent[find(i)] = find(emailToIndex.get(email));
+3.初始化map，key为每个账户的根，value为set，存储每个账户的邮箱
+4.遍历 map，将邮箱加入到对应的账户中
+5.将结果转换为要求的格式
+
+
+## 代码
+
+```js
+// 并查集
+const find = (x) => {
+    if (parent[x] !== x) {
+        parent[x] = find(parent[x]);
+    }
+    return parent[x];
+}
+const parent = [];
+
+var accountsMerge = function(accounts) {
+    // 初始化并查集
+    for (let i = 0; i < accounts.length; i++) {
+        parent[i] = i;
+    }
+    // 将邮箱与账户索引关联
+    const emailToIndex = new Map();
+    for (let i = 0; i < accounts.length; i++) {
+        for (let j = 1; j < accounts[i].length; j++) {
+            const email = accounts[i][j];
+            if (!emailToIndex.has(email)) {
+                emailToIndex.set(email, i);
+            } else {
+                // 合并账户 
+                parent[find(i)] = find(emailToIndex.get(email));
+            }
+        }
+    }
+
+
+    const map  = new Map();
+    for (let i = 0; i < accounts.length; i++) {
+        // 找到集合的根 
+        const root = find(i);
+        if (!map.has(root)) {
+            // Set 去重
+            map.set(root, new Set());
+        }
+        // 将邮箱加入到对应的账户中
+        for (let j = 1; j < accounts[i].length; j++) {
+            map.get(root).add(accounts[i][j]);
+        }
+    }
+
+    // 将结果转换为要求的格式   
+    const res = [];
+    for (const [key, value] of map.entries()) {
+        // 按照字典序排序
+        res.push([accounts[key][0], ...Array.from(value).sort()]);
+    }
+    return res;
+
+
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
