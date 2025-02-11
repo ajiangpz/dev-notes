@@ -1,0 +1,126 @@
+---
+title: 设计链表
+date: "2025-02-10"
+tags: ["list"]
+draft: false
+summary:
+---
+
+# 描述
+设计链表
+
+
+
+
+# 思路
+1.初始化链表
+2.获取链表长度
+3.获取链表指定位置的值
+4.在链表头部添加值
+5.在链表尾部添加值
+6.在链表指定位置添加值
+7.删除链表指定位置的值
+
+# 代码
+
+```js
+var MyLinkedList = function() {
+    this.size = 0;
+    this.head = null;
+};
+var Node = function(val) {
+    this.val = val;
+    this.next = null;
+};
+/** 
+ * @param {number} index
+ * @return {number}
+ */
+MyLinkedList.prototype.get = function(index) {
+    if (index < 0 || index >= this.size) {
+        return -1;
+    }
+    let current = this.head;
+    for (let i = 0; i < index; i++) {
+        current = current.next;
+    }
+    return current.val;
+};
+
+/** 
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtHead = function(val) {
+    const newNode = new Node(val);
+    newNode.next = this.head;
+    this.head = newNode;
+    this.size++;
+};
+
+/** 
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtTail = function(val) {
+    const newNode = new Node(val);
+    if (this.size === 0) {
+        this.head = newNode;
+    } else {
+        let current = this.head;
+        while (current.next) {
+            current = current.next; 
+        }
+        current.next = newNode;
+    }
+    this.size++;
+};
+
+/** 
+ * @param {number} index 
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtIndex = function(index, val) {
+    if (index < 0 || index > this.size) {
+        return;
+    }
+    const newNode = new Node(val);
+    if (index === 0) {
+        newNode.next = this.head;
+        this.head = newNode;
+    } else {
+        let current = this.head;
+        for (let i = 0; i < index - 1; i++) {
+            current = current.next;
+        }
+        newNode.next = current.next;
+        current.next = newNode;
+    }
+    this.size++;
+};
+
+/** 
+ * @param {number} index
+ * @return {void}
+ */
+MyLinkedList.prototype.deleteAtIndex = function(index) {
+    if (index < 0 || index >= this.size) {
+        return;
+    }
+    if (index === 0) {
+        this.head = this.head.next;
+    } else {  
+        let current  = this.head;
+        for (let i = 0; i < index - 1; i++) {
+            current = current.next;
+        }
+        current.next = current.next.next;
+    }
+    this.size--;
+};
+
+
+```
+
+
