@@ -1,0 +1,52 @@
+---
+title: 重排链表
+date: 2025-02-11
+tags: ["链表", "双指针"]
+draft: false
+summary: 重排链表
+---
+
+# 描述
+给定一个单链表 `L`：`L0→L1→…→Ln-1→Ln` ，
+将其重新排列后变为：`L0→Ln→L1→Ln-1→L2→Ln-2→…`
+
+# 思路
+1、寻找出原链表的中点，把链表划分为两个区域
+2、将右边的链表进行反转
+3、把这两个区域进行交错合并
+
+# 代码
+```js
+var reorderList = function(head) {
+    if (!head) return;
+
+    // 寻找中点
+    let slow = head, fast = head;
+    while (fast.next && fast.next.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    let mid = slow.next;
+    slow.next = null;
+
+    // 反转右边的链表   
+    let pre = null, cur = mid;
+    while (cur) {
+        let next = cur.next;
+        cur.next = pre;
+        pre = cur;
+            cur = next;
+    }
+
+    // 交错合并
+    let p1 = head, p2 = pre;
+    while (p1 && p2) {
+        let next1 = p1.next;
+        let next2 = p2.next;
+        p1.next = p2;
+        p2.next = next1;
+        p1 = next1;
+        p2 = next2;
+    }
+};
+```
