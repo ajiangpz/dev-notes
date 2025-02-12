@@ -1,0 +1,36 @@
+---
+title: 访问完所有房间的第一天
+date: "2025-02-11"
+tags: ["algorithm", "dynamic-programming"]
+draft: false
+summary:
+---
+
+# 描述
+
+1. 你有一个房间序列，从 0 到 n-1。
+2. 你从 0 号房间开始，每天访问一个房间。
+3. 你访问房间的顺序由 nextVisit 数组决定,范围是 0 <= nextVisit[i] <= i。
+4. 你访问房间的次数是奇数次，则下一个房间是 nextVisit[i]。
+5. 你访问房间的次数是偶数次，则下一个房间是 (i + 1) % n。
+6. 返回你访问完所有房间的第一天。
+
+# 思路
+
+1.关键：0 <= nextVisit[i] <= i ,也就是说，走奇数次到达房间 nextVisit[i] 只能原地踏步或者走回头路
+2.这说明，走到当前节点时，所有前面的节点肯定都走过了，当前节点位置到达时间比前面晚
+3.我们以下图 i-1=1 到 i=2 的位置为例，可以发现从左侧节点 i-1 到右侧 i 经历了四个部分：到达前一个位置，花费 dp[i-1] 步i-1 位置到 j=nextVisit[i-1], 花费 1 步j 到 i-1, 花费 dp[i-1]-dp[j] 步（因为 nextVisit[i-1]<=i 所以 j<=i-1,所以dp[j]<=dp[i-1]）i-1 到 i，花费 1 步
+
+# 代码
+
+```js
+const MOD = 1e9 + 7;
+var firstDayBeenInAllRooms = function (nextVisit) {
+  const n = nextVisit.length;
+  const dp = new Array(n).fill(0);
+  for (let i = 1; i < n; i++) {
+    dp[i] = (dp[i - 1] + dp[i - 1] - dp[nextVisit[i - 1]] + 2 + MOD) % MOD;
+  }
+  return dp[n - 1];
+};
+```
