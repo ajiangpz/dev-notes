@@ -1,0 +1,47 @@
+---
+title: 两两交换链表中的节点
+date: 2025-02-17
+tags: ["algorithm", "linked-list", "two-pointers"],
+draft: false
+summary:
+---
+
+## 题目
+
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+## 思路
+
+1. 使用双指针，一个指针先走两步，然后两个指针一起走，直到第一个指针走到链表的末尾。
+2. 交换两个指针指向的节点。
+
+## 代码
+
+```js
+var swapPairs = function (head) {
+  // 创建一个虚拟节点，方便处理交换头节点的情况
+  let dummy = new ListNode(0, head);
+  // 使用双指针法，first指针先走2步，然后两个指针一起走，当first指针走到链表末尾时，second指针正好走到倒数第2个节点
+  let first = head;
+  // 虚拟节点的下一个节点
+  let second = dummy;
+  // 交换两个节点
+  while (first && first.next) {
+    // 交换两个节点
+    // 第一个节点的下一个节点
+    let firstNext = first.next;
+    // 第二个节点的下一个节点
+    let secondNext = firstNext.next;
+    // 交换两个节点的next
+    firstNext.next = first;
+    // 第一个节点的next
+    first.next = secondNext;
+    // 虚拟节点的next
+    second.next = firstNext;
+    // 移动指针
+    second = first;
+    first = secondNext;
+  }
+  return dummy.next;
+};
+```

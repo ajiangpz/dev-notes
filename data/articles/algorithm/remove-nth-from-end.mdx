@@ -1,0 +1,38 @@
+---
+title: 删除链表的倒数第 N 个结点
+date: 2025-02-17
+tags: ["algorithm"],
+draft: false
+summary:
+---
+
+## 题目
+
+给定一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+## 思路
+
+1. 使用双指针，一个指针先走 n 步，然后两个指针一起走，直到第一个指针走到链表的末尾。
+2. 删除第二个指针指向的节点。
+
+## 代码
+
+```js
+var removeNthFromEnd = function (head, n) {
+  // 创建一个虚拟节点，方便处理删除头节点的情况
+  let dummy = new ListNode(0, head);
+  // 使用双指针法，first指针先走n步，然后两个指针一起走，当first指针走到链表末尾时，second指针正好走到倒数第n个节点
+  let first = head;
+  let second = dummy;
+  for (let i = 0; i < n; i++) {
+    first = first.next;
+  }
+  while (first) {
+    first = first.next;
+    second = second.next;
+  }
+  // 删除倒数第n个节点
+  second.next = second.next.next;
+  return dummy.next;
+};
+```
