@@ -1,0 +1,87 @@
+---
+title: 组合总和
+date: "2025-02-19"
+tags: ["algorithm","backtracking"]
+draft: false
+summary:
+---
+
+
+## 39. 组合总和
+
+[39. 组合总和](https://leetcode.cn/problems/combination-sum/)
+
+### 题目描述
+
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的数字可以无限制重复被选取。
+
+### 示例
+
+``` js
+输入: candidates = [2,3,6,7], target = 7
+输出: [[7],[2,2,3]]
+```
+
+``` js
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+``` 
+
+### 思路
+1. 回溯算法
+2. 递归
+3. 剪枝 
+
+
+### 代码
+
+``` js
+var combinationSum = function(candidates, target) {
+    let res = [];
+    // 递归
+    const dfs = (start, sum, path) => {
+        // 如果和等于目标值，将路径加入结果集
+        if (sum === target) {
+            res.push([...path]);
+            return;
+        }
+        // 如果和大于目标值，直接返回
+        if (sum > target) return;
+        // 遍历 candidates
+        for (let i = start; i < candidates.length; i++) {
+            // 选择当前元素
+            path.push(candidates[i]);
+            // 递归
+            dfs(i, sum + candidates[i], path);
+            // 撤销选择
+            path.pop();
+        }
+    };
+
+    dfs(0, 0, []);
+    return res;
+};
+
+
+
+```
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,61 @@
+---
+title: 搜索旋转排序数组
+date: "2025-02-19"
+tags: ["algorithm", "array"]
+draft: false
+summary: 搜索旋转排序数组
+---
+
+## 题目
+
+[33. 搜索旋转排序数组](https://leetcode.cn/problems/search-in-rotated-sorted-array/)
+
+## 解题思路
+1.二分查找，判断mid是否等于target
+2.判断nums[left] <= nums[mid]，如果成立，则说明左半部分是有序的，否则右半部分是有序的
+3.如果左半部分是有序的，则判断target是否在left和mid之间，如果成立，则right = mid - 1；否则left = mid + 1，去右半部分继续查找
+4.如果右半部分是有序的，则判断target是否在mid和right之间，如果成立，则left = mid + 1；否则right = mid - 1，去左半部分继续查找
+5.重复步骤1-4，直到找到target
+6.如果找不到target，返回-1
+
+
+
+## 代码实现
+```js
+var search = function(nums, target) {
+    let left = 0, right = nums.length - 1;
+    
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2);
+        
+        if (nums[mid] === target) return mid;
+        
+        // 判断哪一部分是有序的
+        if (nums[left] <= nums[mid]) { // 左半部分有序
+            if (nums[left] <= target && target < nums[mid]) {
+                right = mid - 1; // 在左半部分查找
+            } else {
+                left = mid + 1; // 去右半部分查找
+            }
+        } else { // 右半部分有序
+            if (nums[mid] < target && target <= nums[right]) {
+                left = mid + 1; // 在右半部分查找
+            } else {
+                right = mid - 1; // 去左半部分查找
+            }
+        }
+    }
+    
+    return -1; // 未找到
+};
+```
+
+
+
+
+
+
+
+
+
+
