@@ -11,12 +11,12 @@ summary: 搜索旋转排序数组
 [33. 搜索旋转排序数组](https://leetcode.cn/problems/search-in-rotated-sorted-array/)
 
 ## 解题思路
-1.二分查找，判断mid是否等于target
-2.判断nums[left] <= nums[mid]，如果成立，则说明左半部分是有序的，否则右半部分是有序的
-3.如果左半部分是有序的，则判断target是否在left和mid之间，如果成立，则right = mid - 1；否则left = mid + 1，去右半部分继续查找
-4.如果右半部分是有序的，则判断target是否在mid和right之间，如果成立，则left = mid + 1；否则right = mid - 1，去左半部分继续查找
-5.重复步骤1-4，直到找到target
-6.如果找不到target，返回-1
+1.二分查找，判断 `mid` 是否等于 `target`
+2.判断 `nums[left] <= nums[mid]`，如果成立，则说明左半部分是有序的，否则右半部分是有序的
+3.如果左半部分是有序的，则判断 `target` 是否在 `left` 和 `mid` 之间，如果成立，则 `right = mid - 1`；否则 `left = mid + 1`，去右半部分继续查找
+4.如果右半部分是有序的，则判断 `target` 是否在 `mid` 和 `right` 之间，如果成立，则 `left = mid + 1`；否则 `right = mid - 1`，去左半部分继续查找
+5.重复步骤1-4，直到找到 `target`
+6.如果找不到 `target`，返回 `-1`
 
 
 
