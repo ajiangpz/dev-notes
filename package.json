@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.26.0",
+    "@cloudbase/js-sdk": "^2.9.1",
     "@headlessui/react": "2.2.0",
     "@next/bundle-analyzer": "15.0.2",
     "@tailwindcss/forms": "^0.5.9",
@@ -40,7 +41,8 @@
     "remark-math": "^6.0.0",
     "sql": "^0.78.0",
     "tailwindcss": "^3.4.14",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "wx-server-sdk": "^3.0.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.0.1",
