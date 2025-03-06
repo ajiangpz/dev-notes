@@ -3,4 +3,9 @@ export interface ChatHistory {
   title: string;
   createdAt: Date;
   messages: Message[];
+}
+
+export interface Message {
+  role: "user" | "assistant" | "thinking";
+  content: string;
 } 

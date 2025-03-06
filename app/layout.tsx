@@ -11,6 +11,8 @@ import Footer from '@/components/Footer'
 import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
+
 
 const space_grotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -58,9 +60,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const basePath = process.env.BASE_PATH || ''
-
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const basePath = process.env.BASE_PATH || '';
+  const headersList = headers();
+  const pathname = (await headersList).get('x-pathname') || '';
   return (
     <html
       lang={siteMetadata.language}
@@ -99,10 +102,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Analytics analyticsConfig={siteMetadata.analytics} />
           <SectionContainer>
             <SearchProvider searchConfig={siteMetadata.search}>
-              <Header />
+              {/* 如果显示的是ai页面，则不显示header */}
+              {pathname.includes('/projects/ai') ? null : <Header />}
               <main className="mb-auto">{children}</main>
             </SearchProvider>
-            <Footer />
+            {/* 如果显示的是ai页面，则不显示footer */}
+            {pathname.includes('/projects/ai') ? null : <Footer />}
           </SectionContainer>
         </ThemeProviders>
       </body>
