@@ -1,0 +1,38 @@
+---
+title: "106.从中序与后序遍历序列构造二叉树"
+date: "2025-03-10"
+description: "106.从中序与后序遍历序列构造二叉树"
+tags: ["algorithm","tree"]
+difficulty: "medium"
+---
+
+## 题目
+
+给定两个整数数组 `inorder` 和 `postorder`，其中 `inorder` 是二叉树的中序遍历，`postorder` 是二叉树的后序遍历。
+
+请构造二叉树并返回其根节点。
+
+
+## 解题思路
+
+1. 递归
+
+
+
+## 代码实现
+
+```javascript
+var buildTree = function(inorder, postorder) {
+    if (inorder.length === 0 || postorder.length === 0) return null;
+    // 后序遍历的最后一个元素是根节点   
+    const root = new TreeNode(postorder[postorder.length - 1]);
+    // 在中序遍历中找到根节点的位置
+    const index = inorder.indexOf(root.val);
+    // 递归构建左子树
+    root.left = buildTree(inorder.slice(0, index), postorder.slice(0, index));
+    // 递归构建右子树
+    root.right = buildTree(inorder.slice(index + 1), postorder.slice(index, -1));
+    return root;    
+};
+
+``` 
