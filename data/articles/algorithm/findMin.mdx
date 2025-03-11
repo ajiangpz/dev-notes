@@ -1,0 +1,78 @@
+---
+title: "寻找旋转排序数组中的最小值"
+date: "2025-03-11"
+description: "寻找旋转排序数组中的最小值"
+tags: ["algorithm", "binary-search"]
+difficulty: "medium"
+---
+
+## 题目
+
+给定一个旋转排序数组，找到最小值。
+
+## 解题思路
+
+1. 使用二分查找
+2. 使用递归
+3. 使用迭代
+
+## 代码实现 
+
+### 二分查找
+
+```javascript
+var findMin = function(nums) {
+    // 使用二分查找
+    let left = 0, right = nums.length - 1;
+    while (left < right) {
+        let mid = Math.floor((left + right) / 2);
+        if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return nums[left];
+};
+```
+
+### 递归
+
+```javascript
+var findMin = function(nums) {
+    // 使用递归
+    if (nums.length === 1) {
+        return nums[0];
+    }
+    let mid = Math.floor(nums.length / 2);
+    if (nums[mid] > nums[nums.length - 1]) {
+        return findMin(nums.slice(mid + 1));
+    } else {
+        return findMin(nums.slice(0, mid));
+    }
+};
+``` 
+
+### 迭代
+
+```javascript
+var findMin = function(nums) {
+    // 使用迭代
+    let left = 0, right = nums.length - 1;
+    while (left < right) {
+        let mid = Math.floor((left + right) / 2);
+        if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return nums[left];
+};
+``` 
+
+
+
+
+
+

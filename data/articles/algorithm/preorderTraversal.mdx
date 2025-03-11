@@ -1,0 +1,98 @@
+---
+title: "二叉树的前序遍历"
+date: "2025-03-11"
+description: "二叉树的前序遍历"
+tags: ["algorithm", "binary-tree"]
+difficulty: "easy"
+---
+
+## 题目
+
+给定一个二叉树，返回它的前序遍历。
+
+## 解题思路
+
+1. 使用递归
+2. 使用迭代
+3. 使用莫里斯遍历
+
+## 代码实现 
+
+### 递归
+
+```javascript   
+
+  var   preorderTraversal = function(root) {
+    // 使用递归
+    if (root === null) {
+        return [];
+    }
+    return [root.val, ...preorderTraversal(root.left), ...preorderTraversal(root.right)];
+  }
+```
+
+### 迭代
+
+```javascript
+
+var preorderTraversal = function(root) {
+  // 使用迭代
+  if (root === null) {
+    return [];
+  }
+  let result = [];
+  let stack = [root];
+  while (stack.length > 0) {
+    let node = stack.pop(); 
+    result.push(node.val);
+    if (node.right !== null) {
+      stack.push(node.right);
+    }
+    if (node.left !== null) {
+      stack.push(node.left);
+    }
+  }
+  return result;
+};
+
+### 莫里斯遍历
+
+```javascript
+
+var preorderTraversal = function(root) {
+  // 使用莫里斯遍历
+  if (root === null) {
+    return [];
+  }
+  let result = [];
+  let current = root;
+  while (current !== null) {
+    if (current.left === null) {
+      result.push(current.val);
+      current = current.right;
+    } else {
+      let predecessor = current.left;
+      while (predecessor.right !== null && predecessor.right !== current) {
+        predecessor = predecessor.right;
+      }
+      if (predecessor.right === null) {
+        predecessor.right = current;    
+        result.push(current.val);   
+        current = current.left;
+      } else {
+        predecessor.right = null;
+        current = current.right;
+      }
+    }
+  }
+  return result;
+};
+
+
+
+
+
+
+
+
+

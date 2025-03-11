@@ -1,0 +1,89 @@
+---
+title: "环形链表"
+date: "2025-03-11"
+description: "环形链表"
+tags: ["algorithm", "linked-list"]
+difficulty: "easy"
+---
+
+## 题目
+
+给定一个链表，判断链表中是否有环。
+
+## 解题思路
+
+1. 使用快慢指针
+    快指针每次走两步，慢指针每次走一步。如果快指针追上慢指针，则说明有环。
+
+2. 使用哈希表
+    遍历链表，将每个节点加入哈希表，如果哈希表中存在该节点，则说明有环。
+
+3. 使用递归 
+    递归遍历链表，如果链表中存在环，则递归会无限递归下去。
+
+
+## 代码实现
+
+### 快慢指针
+
+```javascript
+var hasCycle = function (head) {
+  // 使用快慢指针
+  let slow = head, fast = head;
+  while (fast !== null && fast.next !== null  ) {
+    fast = fast.next.next;
+    slow = slow.next;
+    if (fast === slow) {
+      return true;
+    }
+  }
+  return false;
+};
+```
+
+### 哈希表
+
+```javascript
+var hasCycle = function (head) {
+  // 使用哈希表
+  let map = new Map();
+  while (head !== null) {
+    if (map.has(head)) {
+      return true;
+    }
+    map.set(head, true);
+    head = head.next;
+  }
+  return false;
+};
+```
+
+### 递归
+
+```javascript
+var hasCycle = function (head) {
+  // 使用递归
+  if (head === null || head.next === null) {
+    return false;
+  }
+  if (head === head.next) {
+    return true;
+  }
+  return hasCycle(head.next);
+};  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
