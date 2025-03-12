@@ -1,0 +1,53 @@
+---
+title: 连续出现的数字
+date: "2025-03-12"
+tags: ["algorithm", "two-pointers"]
+draft: false
+summary:
+---
+# 描述
+我们需要找到连续出现的数字。题目要求我们从一个包含多个整数的表中，找出所有连续出现至少三次的数字。
+
+# 思路
+1. 初始化：我们创建一个空数组 result 来存储结果，并初始化计数器 count 为 1。
+2. 遍历数组：从第二个元素开始遍历数组，检查当前元素是否与前一个元素相同。
+3. 计数：如果相同，增加计数器；如果不同，检查计数器是否大于等于 3，如果是，将前一个元素添加到结果中，并重置计数器。
+4. 最后检查：遍历结束后，检查最后一组数字是否满足条件。
+5. 返回结果：返回 result 数组，其中包含所有连续出现至少三次的数字。
+
+# 代码
+
+```js
+function findConsecutiveNumbers(nums) {
+  const result = [];
+  let count = 1;
+
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] === nums[i - 1]) {
+      count++;
+    } else {
+      if (count >= 3) {
+        result.push(nums[i - 1]);
+      }
+      count = 1; // 重置计数器
+    }
+  }
+
+  // 检查最后一组数字
+  if (count >= 3) {
+    result.push(nums[nums.length - 1]);
+  }
+
+  return result;
+}   
+```
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+
+
+
+
+
+

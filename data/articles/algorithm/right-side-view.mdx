@@ -1,0 +1,49 @@
+---
+title: 二叉树的右视图
+date: "2025-03-12"
+tags: ["algorithm", "tree"]
+draft: false
+summary:
+---
+
+# 描述
+
+给定一个二叉树的根节点 root ，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+
+
+# 思路
+
+
+
+
+
+# 代码
+
+```js
+var rightSideView = function(root) {
+    if (!root) return [];
+    const result = [];  
+    const queue = [root];
+    while (queue.length) {
+        // 获取当前层的节点数量
+        const levelSize = queue.length;
+        // 遍历当前层的所有节点
+        for (let i = 0; i < levelSize; i++) {
+            // 获取当前层的第一个节点
+            const node = queue.shift();
+            // 如果当前节点是当前层的最后一个节点，则将该节点的值加入结果数组
+            if (i === levelSize - 1) {
+                result.push(node.val);
+            }
+            // 如果当前节点有左子节点，则将左子节点加入队列
+            if (node.left) queue.push(node.left);
+            // 如果当前节点有右子节点，则将右子节点加入队列
+            if (node.right) queue.push(node.right);
+        }
+    }
+    return result;
+};
+```
+
+
