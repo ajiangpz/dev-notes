@@ -4,6 +4,7 @@ interface Shortcut {
   icon: React.ReactNode;
 }
 
+import { CodeIcon, LightbulbIcon } from 'lucide-react';
 const shortcuts: Shortcut[] = [
   {
     title: "代码解释",
@@ -12,8 +13,8 @@ const shortcuts: Shortcut[] = [
   },
   {
     title: "优化建议",
-    prompt: "请给出这段代码的优化建议：",
-    icon: <LightBulbIcon className="w-5 h-5" />
+    prompt: "请给出这段代码的优化建议：", 
+    icon: <LightbulbIcon className="w-5 h-5" />
   },
   // ... 更多快捷指令
-]; 
+];
