@@ -160,6 +160,8 @@ export default function AiPage() {
         prompt={prompt}
         setPrompt={setPrompt}
         handleSubmit={handleSubmit}
+        loadChat={loadChat}
+        getSavedChats={getSavedChats}
         isLoading={isLoading}
         showSavedChats={showSavedChats}
         setShowSavedChats={setShowSavedChats}

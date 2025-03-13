@@ -7,7 +7,18 @@
 
 /* Code title styles */
 .remark-code-title {
-  @apply rounded-t bg-gray-700 px-5 py-3 font-mono text-sm font-bold text-gray-200 dark:bg-gray-800;
+  border-radius-top-left: 0.375rem;
+  border-radius-top-right: 0.375rem;
+  background-color: #374151;
+  padding: 0.75rem 1.25rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #e5e7eb;
+}
+
+.dark .remark-code-title {
+  background-color: #1f2937;
 }
 
 .remark-code-title + div > pre {
@@ -32,7 +43,10 @@
 }
 
 .highlight-line {
-  @apply -mx-4 border-l-4 border-primary-500 bg-gray-700 bg-opacity-50;
+  margin: 0 -1rem;
+  border-left-width: 4px;
+  border-left-color: #3b82f6;
+  background-color: rgba(55, 65, 81, 0.5);
 }
 
 .line-number::before {

@@ -50,7 +50,6 @@
     "remark-math": "^6.0.0",
     "sql": "^0.78.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss": "^3.4.14",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.169.0",
     "wx-server-sdk": "^3.0.1"
@@ -62,10 +61,12 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
-    "postcss": "^8",
+    "postcss": "^8.5.3",
     "raw-loader": "^4.0.2",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
 }

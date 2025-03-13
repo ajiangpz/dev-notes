@@ -1,4 +1,4 @@
-export function exportChat(messages: Message[], format: 'markdown' | 'pdf' | 'json') {
+export function exportChat(messages: { role: string, content: string }[], format: 'markdown' | 'pdf' | 'json') {
   switch (format) {
     case 'markdown':
       return messages.map(m => 
