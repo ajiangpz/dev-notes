@@ -1,3 +1,4 @@
+"use client";
 import Link from 'next/link';
 
 const paths = [
@@ -34,12 +35,12 @@ const paths = [
     icon: "🎨"
   }
 ];
-
+  
 export default function LearningPath() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {paths.map((path, index) => (
-        <div key={index} className="card border border-border p-6 rounded-xl">
+        <div key={index} className="card border border-gray-200 dark:border-gray-800 p-6 rounded-xl bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-4">
             <span className="text-4xl">{path.icon}</span>
             <span className="inline-block rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-100">
@@ -54,14 +55,14 @@ export default function LearningPath() {
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-100 mr-3">
                   {stepIndex + 1}
                 </span>
-                <Link href={`/articles/${step.slug}`} className="hover:text-primary-600 dark:hover:text-primary-400">
+                <Link href={`/blog/articles/${step.slug}`} className="hover:text-primary-600 dark:hover:text-primary-400">
                   {step.title}
                 </Link>
               </li>
             ))}
           </ol>
           <Link 
-            href={`/articles/${path.steps[0].slug}`}
+            href={`/blog/articles/${path.steps[0].slug}`}
             className="inline-flex items-center text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
           >
             开始学习 <span className="ml-1">→</span>

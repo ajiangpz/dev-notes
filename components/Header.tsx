@@ -1,4 +1,4 @@
-'use client';
+'use client'; 
 import Link from './Link'
 import headerNavLinks from '@/data/headerNavLinks'
 import Logo from '@/data/logo.svg'

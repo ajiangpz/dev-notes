@@ -1,3 +1,6 @@
+
+"use client";
+
 export default function TrendingTech() {
   const trends = [
     { name: "React Server Components", category: "前端框架", hot: 95 },
@@ -11,7 +14,7 @@ export default function TrendingTech() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {trends.map((trend, index) => (
-        <div key={index} className="flex items-center p-4 rounded-lg border border-border bg-card">
+        <div key={index} className="flex items-center p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800">
           <div className="mr-4">
             <div className="relative h-16 w-16 overflow-hidden rounded-full">
               <div 
