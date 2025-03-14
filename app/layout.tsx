@@ -57,55 +57,59 @@ const systemFont = {
   className: 'font-sans',
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const basePath = process.env.BASE_PATH || '';
-  const headersList = headers();
-  const pathname = (await headersList).get('x-pathname') || '';
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  
   return (
-    <html
-      lang={siteMetadata.language}
-      className={`${systemFont.className} scroll-smooth`}
-      suppressHydrationWarning
-    >
+    <html lang={siteMetadata.language} className={`${systemFont.className} scroll-smooth`}>
       <link
         rel="apple-touch-icon"
         sizes="76x76"
-        href={`${basePath}/static/favicons/apple-touch-icon.png`}
+        href={`${process.env.BASE_PATH || ''}/static/favicons/apple-touch-icon.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="32x32"
-        href={`${basePath}/static/favicons/favicon-32x32.png`}
+        href={`${process.env.BASE_PATH || ''}/static/favicons/favicon-32x32.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="16x16"
-        href={`${basePath}/static/favicons/favicon-16x16.png`}
+        href={`${process.env.BASE_PATH || ''}/static/favicons/favicon-16x16.png`}
       />
-      <link rel="manifest" href={`${basePath}/static/favicons/site.webmanifest`} />
+      <link rel="manifest" href={`${process.env.BASE_PATH || ''}/static/favicons/site.webmanifest`} />
       <link
         rel="mask-icon"
-        href={`${basePath}/static/favicons/safari-pinned-tab.svg`}
+        href={`${process.env.BASE_PATH || ''}/static/favicons/safari-pinned-tab.svg`}
         color="#5bbad5"
       />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
-      <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
-      <body className="bg-white pl-[calc(100vw-100%)] text-black antialiased dark:bg-gray-950 dark:text-white">
+      <link rel="alternate" type="application/rss+xml" href={`${process.env.BASE_PATH || ''}/feed.xml`} />
+      <body className="bg-white text-black antialiased dark:bg-gray-950 dark:text-white custom-scrollbar">
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics} />
-          <SectionContainer>
-            <SearchProvider searchConfig={siteMetadata.search}>
-              {/* 如果显示的是ai页面，则不显示header */}
-              {pathname.includes('/projects/ai') ? null : <Header />}
-              <main className="mb-auto">{children}</main>
-            </SearchProvider>
-            {/* 如果显示的是ai页面，则不显示footer */}
-            {pathname.includes('/projects/ai') ? null : <Footer />}
-          </SectionContainer>
+          {/* 如果显示的是ai页面，则不显示header */}
+          {pathname.includes('/projects/ai') ? null : <Header />}
+          
+          {/* 添加顶部间距，避免内容被固定header遮挡 */}
+          <div className="pt-16"> {/* 调整这个值以匹配header高度 */}
+            <SectionContainer>
+              <SearchProvider searchConfig={siteMetadata.search}>
+                <main className="mb-auto">{children}</main>
+              </SearchProvider>
+              {/* 如果显示的是ai页面，则不显示footer */}
+              {pathname.includes('/projects/ai') ? null : <Footer />}
+            </SectionContainer>
+          </div>
         </ThemeProviders>
       </body>
     </html>

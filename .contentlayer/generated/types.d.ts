@@ -48,6 +48,8 @@ export type Blog = {
   layout?: string | undefined
   bibliography?: string | undefined
   canonicalUrl?: string | undefined
+  description?: string | undefined
+  difficulty?: string | undefined
   /** MDX file body */
   body: MDX
   readingTime: json

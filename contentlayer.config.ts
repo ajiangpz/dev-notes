@@ -22,8 +22,9 @@ import rehypeKatexNoTranslate from 'rehype-katex-notranslate'
 import rehypeCitation from 'rehype-citation'
 import rehypePrismPlus from 'rehype-prism-plus'
 import rehypePresetMinify from 'rehype-preset-minify'
-import siteMetadata from './data/siteMetadata.js'
+import siteMetadata from './data/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
+import prettier from 'prettier'
 
 const root = process.cwd()
 const isProduction = process.env.NODE_ENV === 'production'
@@ -61,11 +62,11 @@ const computedFields: ComputedFields = {
 /**
  * Count the occurrences of all tags across blog posts and write to json file
  */
-function createTagCount(allBlogs: any) {
+async function createTagCount(allBlogs: typeof Blog[]) {
   const tagCount: Record<string, number> = {}
   allBlogs.forEach((file: any) => {
     if (file.tags && (!isProduction || file.draft !== true)) {
-      file.tags.forEach((tag: string   ) => {
+      file.tags.forEach((tag: string) => {
         const formattedTag = slug(tag)
         if (formattedTag in tagCount) {
           tagCount[formattedTag] += 1
@@ -75,17 +76,18 @@ function createTagCount(allBlogs: any) {
       })
     }
   })
-  writeFileSync('./app/blog/tag-data.json', JSON.stringify(tagCount))
+  const formatted = await prettier.format(JSON.stringify(tagCount, null, 2), { parser: 'json' })
+  writeFileSync('./app/tag-data.json', formatted)
 }
 
-function createSearchIndex(allBlogs: any) { 
+function createSearchIndex(allBlogs: typeof Blog[]) {
   if (
     siteMetadata?.search?.provider === 'kbar' &&
     siteMetadata.search.kbarConfig.searchDocumentsPath
   ) {
     writeFileSync(
       `public/${path.basename(siteMetadata.search.kbarConfig.searchDocumentsPath)}`,
-      JSON.stringify(allCoreContent(sortPosts(allBlogs)))
+      JSON.stringify(allCoreContent(sortPosts(allBlogs as any)))
     )
     console.log('Local search index generated...')
   }
@@ -107,6 +109,8 @@ export const Blog = defineDocumentType(() => ({
     layout: { type: 'string' },
     bibliography: { type: 'string' },
     canonicalUrl: { type: 'string' },
+    description: { type: 'string' },
+    difficulty: { type: 'string' },
   },
   computedFields: {
     ...computedFields,
@@ -179,7 +183,7 @@ export default makeSource({
   },
   onSuccess: async (importData) => {
     const { allBlogs } = await importData()
-    createTagCount(allBlogs)
-    createSearchIndex(allBlogs)
+    createTagCount(allBlogs as any)
+    createSearchIndex(allBlogs as any)
   },
 })
