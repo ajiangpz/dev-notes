@@ -1,16 +1,16 @@
-import '@/css/tailwind.css'
-import 'pliny/search/algolia.css'
-import 'remark-github-blockquote-alert/alert.css'
-import './globals.css'
-import type { Metadata } from 'next'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import { SearchProvider, SearchConfig } from 'pliny/search'
-import Header from '@/components/Header'
-import SectionContainer from '@/components/SectionContainer'
-import Footer from '@/components/Footer'
-import siteMetadata from '@/data/siteMetadata'
-import { ThemeProviders } from './theme-providers'
-import { headers } from 'next/headers'
+import "@/css/tailwind.css";
+import "pliny/search/algolia.css";
+import "remark-github-blockquote-alert/alert.css";
+import "./globals.css";
+import type { Metadata } from "next";
+import { Analytics, AnalyticsConfig } from "pliny/analytics";
+import { SearchProvider, SearchConfig } from "pliny/search";
+import Header from "@/components/Header";
+import SectionContainer from "@/components/SectionContainer";
+import Footer from "@/components/Footer";
+import siteMetadata from "@/data/siteMetadata";
+import { ThemeProviders } from "./theme-providers";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
@@ -22,16 +22,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteMetadata.title,
     description: siteMetadata.description,
-    url: './',
+    url: "./",
     siteName: siteMetadata.title,
     images: [siteMetadata.socialBanner],
-    locale: 'en_US',
-    type: 'website',
+    locale: "en_US",
+    type: "website",
   },
   alternates: {
-    canonical: './',
+    canonical: "./",
     types: {
-      'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml`,
+      "application/rss+xml": `${siteMetadata.siteUrl}/feed.xml`,
     },
   },
   robots: {
@@ -40,78 +40,95 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   twitter: {
     title: siteMetadata.title,
-    card: 'summary_large_image',
+    card: "summary_large_image",
     images: [siteMetadata.socialBanner],
   },
-}
+};
 
 // 使用系统字体
 const systemFont = {
-  className: 'font-sans',
-}
+  className: "font-sans",
+};
 
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
-  
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+
   return (
-    <html lang={siteMetadata.language} className={`${systemFont.className} scroll-smooth`}>
+    <html>
       <link
         rel="apple-touch-icon"
         sizes="76x76"
-        href={`${process.env.BASE_PATH || ''}/static/favicons/apple-touch-icon.png`}
+        href={`${process.env.BASE_PATH || ""}/static/favicons/apple-touch-icon.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="32x32"
-        href={`${process.env.BASE_PATH || ''}/static/favicons/favicon-32x32.png`}
+        href={`${process.env.BASE_PATH || ""}/static/favicons/favicon-32x32.png`}
       />
       <link
         rel="icon"
         type="image/png"
         sizes="16x16"
-        href={`${process.env.BASE_PATH || ''}/static/favicons/favicon-16x16.png`}
+        href={`${process.env.BASE_PATH || ""}/static/favicons/favicon-16x16.png`}
       />
-      <link rel="manifest" href={`${process.env.BASE_PATH || ''}/static/favicons/site.webmanifest`} />
+      <link
+        rel="manifest"
+        href={`${process.env.BASE_PATH || ""}/static/favicons/site.webmanifest`}
+      />
       <link
         rel="mask-icon"
-        href={`${process.env.BASE_PATH || ''}/static/favicons/safari-pinned-tab.svg`}
+        href={`${process.env.BASE_PATH || ""}/static/favicons/safari-pinned-tab.svg`}
         color="#5bbad5"
       />
       <meta name="msapplication-TileColor" content="#000000" />
-      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
-      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
-      <link rel="alternate" type="application/rss+xml" href={`${process.env.BASE_PATH || ''}/feed.xml`} />
+      <meta
+        name="theme-color"
+        media="(prefers-color-scheme: light)"
+        content="#fff"
+      />
+      <meta
+        name="theme-color"
+        media="(prefers-color-scheme: dark)"
+        content="#000"
+      />
+      <link
+        rel="alternate"
+        type="application/rss+xml"
+        href={`${process.env.BASE_PATH || ""}/feed.xml`}
+      />
       <body className="bg-white text-black antialiased dark:bg-gray-950 dark:text-white custom-scrollbar">
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics} />
           {/* 如果显示的是ai页面，则不显示header */}
-          {pathname.includes('/projects/ai') ? null : <Header />}
-          
+          {pathname.includes("/projects/ai") ? null : <Header />}
+
           {/* 添加顶部间距，避免内容被固定header遮挡 */}
-          <div className="pt-16"> {/* 调整这个值以匹配header高度 */}
+          <div className="pt-16">
+            {" "}
+            {/* 调整这个值以匹配header高度 */}
             <SectionContainer>
               <SearchProvider searchConfig={siteMetadata.search}>
                 <main className="mb-auto">{children}</main>
               </SearchProvider>
               {/* 如果显示的是ai页面，则不显示footer */}
-              {pathname.includes('/projects/ai') ? null : <Footer />}
+              {pathname.includes("/projects/ai") ? null : <Footer />}
             </SectionContainer>
           </div>
         </ThemeProviders>
       </body>
     </html>
-  )
+  );
 }

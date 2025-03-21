@@ -1,19 +1,19 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: '捡瓶子的博客',
-  author: '捡瓶子',
-  headerTitle: '捡瓶子的博客',
-  description: '捡瓶子的博客',
-  language: 'en-us',
-  theme: 'system', // system, dark or light
-  siteUrl: 'https://github.com/ajiangpz',
-  siteRepo: 'https://github.com/ajiangpz',
-  siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
-  socialBanner: `${process.env.BASE_PATH || ''}/static/images/twitter-card.png`,
-  mastodon: 'https://mastodon.social/@mastodonuser',
-  email: '1174072083@qq.com',
-  github: 'https://github.com/ajiangpz',
-  locale: 'en-US',
+  title: "捡瓶子的博客",
+  author: "捡瓶子",
+  headerTitle: "捡瓶子的博客",
+  description: "捡瓶子的博客",
+  language: "en-us",
+  theme: "light", // system, dark or light
+  siteUrl: "https://github.com/ajiangpz",
+  siteRepo: "https://github.com/ajiangpz",
+  siteLogo: `${process.env.BASE_PATH || ""}/static/images/logo.png`,
+  socialBanner: `${process.env.BASE_PATH || ""}/static/images/twitter-card.png`,
+  mastodon: "https://mastodon.social/@mastodonuser",
+  email: "1174072083@qq.com",
+  github: "https://github.com/ajiangpz",
+  locale: "en-US",
   // set to true if you want a navbar fixed to the top
   stickyNav: false,
   analytics: {
@@ -43,14 +43,14 @@ const siteMetadata = {
   newsletter: {
     // supports mailchimp, buttondown, convertkit, klaviyo, revue, emailoctopus, beehive
     // Please add your .env file and modify it according to your selection
-    provider: 'buttondown',
+    provider: "buttondown",
   },
   comments: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
     // Select a provider and use the environment variables associated to it
     // https://vercel.com/docs/environment-variables
-    provider: 'giscus', // supported providers: giscus, utterances, disqus
+    provider: "giscus", // supported providers: giscus, utterances, disqus
     giscusConfig: {
       // Visit the link below, and follow the steps in the 'configuration' section
       // https://giscus.app/
@@ -58,27 +58,27 @@ const siteMetadata = {
       repositoryId: process.env.NEXT_PUBLIC_GISCUS_REPOSITORY_ID,
       category: process.env.NEXT_PUBLIC_GISCUS_CATEGORY,
       categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID,
-      mapping: 'pathname', // supported options: pathname, url, title
-      reactions: '1', // Emoji reactions: 1 = enable / 0 = disable
+      mapping: "pathname", // supported options: pathname, url, title
+      reactions: "1", // Emoji reactions: 1 = enable / 0 = disable
       // Send discussion metadata periodically to the parent window: 1 = enable / 0 = disable
-      metadata: '0',
+      metadata: "0",
       // theme example: light, dark, dark_dimmed, dark_high_contrast
       // transparent_dark, preferred_color_scheme, custom
-      theme: 'light',
+      theme: "light",
       // theme when dark mode
-      darkTheme: 'transparent_dark',
+      darkTheme: "transparent_dark",
       // If the theme option above is set to 'custom`
       // please provide a link below to your custom theme css file.
       // example: https://giscus.app/themes/custom_example.css
-      themeURL: '',
+      themeURL: "",
       // This corresponds to the `data-lang="en"` in giscus's configurations
-      lang: 'en',
+      lang: "en",
     },
   },
   search: {
-    provider: 'kbar', // kbar or algolia
+    provider: "kbar", // kbar or algolia
     kbarConfig: {
-      searchDocumentsPath: `${process.env.BASE_PATH || ''}/search.json`, // path to load documents to search
+      searchDocumentsPath: `${process.env.BASE_PATH || ""}/search.json`, // path to load documents to search
     },
     // provider: 'algolia',
     // algoliaConfig: {
@@ -89,6 +89,6 @@ const siteMetadata = {
     //   indexName: 'docsearch',
     // },
   },
-}
+};
 
-module.exports = siteMetadata
+module.exports = siteMetadata;

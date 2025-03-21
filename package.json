@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/core": "^7.26.0",
     "@cloudbase/js-sdk": "^2.9.1",
+    "@esbuild/darwin-arm64": "^0.25.1",
     "@headlessui/react": "2.2.0",
     "@next/bundle-analyzer": "15.0.2",
     "@radix-ui/react-dialog": "^1.1.6",
