@@ -1,0 +1,34 @@
+---
+title: 判断子序列
+date: "2025-03-25"
+tags: ["algorithm", "two-pointers"]
+draft: false
+summary:
+---
+
+## 描述
+
+给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+
+## 思路
+
+双指针
+
+
+## 代码
+
+```js
+var isSubsequence = function(s, t) {
+    let i = 0, j = 0;
+    while (i < s.length && j < t.length) {
+        if (s[i] === t[j]) {
+            i++;
+        }
+        j++;
+    }
+    return i === s.length;
+};
+
+
+```
+

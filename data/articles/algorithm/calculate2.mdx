@@ -1,0 +1,85 @@
+---
+title: 基本计算器 II
+date: "2025-03-20"
+tags: ["algorithm", "calculate", "stack"]
+draft: false
+summary: 基本计算器 II
+---
+
+## 题目
+
+```js
+输入：s = "3+2*2"
+输出：7
+``` 
+
+```js
+输入：s = " 3/2 "
+输出：1
+``` 
+
+```js
+输入：s = " 3+5 / 2 "
+输出：5
+``` 
+
+## 解题思路
+与基本计算器 I 不同的是，这里多了乘法和除法，所以需要考虑运算符的优先级。
+1. 加法和减法：直接将数字压入栈中（减法将数字转为负数）
+2. 乘法和除法：从栈顶弹出数字，与当前数字进行运算，然后将结果压回栈中
+3. 最终结果：将栈中所有数字相加得到最终结果
+
+## 代码实现
+
+```js
+var calculate = function (s) {
+  let stack = [];
+  let num = "";
+  let sign = null;
+  // we loop till the full length of the array to account for last sign
+  for (let i = 0; i <= s.length; i++) {
+    const curr = s[i];
+    //handle space
+    if (curr === " ") continue;
+    //if char is a number
+    if (!isNaN(curr)) num += curr;
+    //if we have a  sign + - / *
+    if (isNaN(curr)) {
+      num = Number(num);
+      switch (sign) {
+        case "+":
+        case null:
+          //we push the initial number into the stack
+          stack.push(num);
+          break;
+        case "-":
+          //we push any values after the subtraction sign as negative
+          stack.push(-num);
+          break;
+        case "*":
+          //we pop the stack then multiply and push back
+          stack.push(stack.pop() * num);
+          break;
+        case "/":
+          //we pop the stack then devide and push back
+          stack.push(parseInt(stack.pop() / num, 10));
+          break;
+      }
+      // sign becomes current sign
+      sign = curr;
+      // we reset num
+      num = "";
+    }
+  }
+  //we reduce the array adding positive and negative numbers
+  return stack.reduce((a, b) => {
+    return a + b;
+  }, 0);
+};
+```
+
+
+
+
+
+

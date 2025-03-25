@@ -1,0 +1,61 @@
+---
+title: 最长递增子序列
+date: "2025-03-24"
+tags: ["algorithm", "dynamic-programming", "binary-search", "dp"]
+draft: false
+summary: 最长递增子序列
+---
+
+## 题目
+
+给定一个无序的整数数组，找到其中最长上升子序列的长度。
+
+## 示例
+
+```js
+输入: [10,9,2,5,3,7,101,18]
+输出: 4 
+解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。    
+```
+
+## 解题思路
+
+
+
+## 代码实现
+
+```js
+var lengthOfLIS = function (nums) {
+  if (nums.length === 0) return 0;
+
+  // tails[i] 表示长度为i+1的递增子序列的最小末尾值
+  const tails = [nums[0]];
+
+  for (let i = 1; i < nums.length; i++) {
+    // 如果当前数字大于 tails 的最后一个元素，直接添加
+    if (nums[i] > tails[tails.length - 1]) {
+      tails.push(nums[i]);
+    } else {
+      // 二分查找找到第一个大于等于 nums[i] 的位置
+      let left = 0;
+      let right = tails.length - 1;
+
+      while (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        if (tails[mid] < nums[i]) {
+          left = mid + 1;
+        } else {
+          right = mid;
+        }
+      }
+      // 替换那个位置的值
+      tails[left] = nums[i];
+    }
+  }
+
+  return tails.length;
+};
+
+
+
+```

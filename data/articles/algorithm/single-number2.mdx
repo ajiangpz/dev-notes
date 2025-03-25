@@ -1,0 +1,53 @@
+---
+title: 只出现一次的数字 II
+date: "2025-03-23"
+tags: ["algorithm", "single-number", "hash-table"]
+draft: false
+summary: 只出现一次的数字 II
+---
+
+## 题目
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+
+## 示例
+
+```js
+输入: [2,2,3,2]
+输出: 3
+```
+
+```js
+输入: [0,1,0,1,0,1,99]
+输出: 99
+```
+
+## 解题思路
+
+
+
+## 代码实现
+
+```js
+var singleNumber = function(nums) {
+    let result = 0;
+    // 遍历每一个二进制位（整数有32位）
+    for (let i = 0; i < 32; i++) {
+        // 统计当前位上1的个数
+        let count = 0;
+        // 遍历数组中的每个数
+        for (let num of nums) {
+            // 检查当前数字的第i位是否为1
+            if ((num >> i) & 1) {
+                count++;
+            }
+        }
+        // 如果1的个数不能被3整除，说明目标数字在这一位上是1
+        if (count % 3 !== 0) {
+            result |= (1 << i);
+        }
+    }
+    return result;
+};
+
+```
