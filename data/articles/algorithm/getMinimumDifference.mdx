@@ -1,0 +1,48 @@
+---
+title: 二叉搜索树的最小绝对差
+date: "2025-03-26"
+tags: ["algorithm", "tree"]
+draft: false
+summary:
+---
+
+# 描述
+
+给定一个二叉搜索树，计算该树中两个节点之间的最小绝对差。
+
+# 思路
+
+中序遍历
+
+```js
+var getMinimumDifference = function (root) {
+  let minDiff = Infinity;
+  let prevVal = null;
+
+  function inorder(node) {
+    if (!node) return;
+
+    inorder(node.left);
+
+    if (prevVal !== null) {
+      minDiff = Math.min(minDiff, node.val - prevVal);
+    }
+    prevVal = node.val;
+
+    inorder(node.right);
+  }
+
+  inorder(root);
+
+  return minDiff;
+};
+```
+
+## 复杂度分析
+
+- 时间复杂度：O(n)，其中 n 是树中节点的数量。每个节点只访问一次。
+- 空间复杂度：O(h)，其中 h 是树的高度。递归栈的深度为树的高度。
+
+## 解题总结
+
+这个问题是一个典型的二叉搜索树问题，通过中序遍历可以得到一个有序的序列，然后计算相邻节点之间的差值，从而得到最小绝对差。
