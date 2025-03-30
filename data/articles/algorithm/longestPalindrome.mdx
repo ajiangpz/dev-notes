@@ -4,6 +4,7 @@ date: "2025-03-26"
 tags: ["algorithm", "string"]
 draft: false
 summary:
+---
 
 ## 最长回文串
 
@@ -15,16 +16,16 @@ summary:
 输入: "babad"
 输出: "bab"
 注意: "aba" 也是一个有效答案。
-``` 
+```
 
 ## 解题思路
+
 1. 使用一个 map 来记录每个字符出现的次数。
 2. 遍历字符串，如果字符出现的次数是偶数，则将次数除以 2 并累加到 count 中。
 3. 如果字符出现的次数是奇数，则将次数除以 2 并累加到 count 中。
 4. 最后返回 count 和 s.length 的较大值。
 
-
-## 代码实现 
+## 代码实现
 
 ```js
 var longestPalindrome = function (s) {
@@ -38,10 +39,4 @@ var longestPalindrome = function (s) {
   }
   return count < s.length ? count + 1 : count;
 };
-
 ```
-
-
-
-
-

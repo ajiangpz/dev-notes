@@ -1,0 +1,47 @@
+---
+title: 和为K的子数组
+date: "2025-03-29"
+tags: ["algorithm", "array"]
+draft: false
+---
+
+## 题目描述
+
+给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续子数组的个数。
+
+## 解题思路
+
+我们可以使用前缀和来解决这个问题。前缀和是指从数组开始到当前位置的元素之和。
+
+我们可以使用一个哈希表来存储每个前缀和出现的次数。
+
+然后我们遍历数组，计算每个位置的前缀和，并将其出现的次数加到哈希表中。
+
+## 代码实现
+
+```javascript
+var subarraySum = function (nums, k) {
+  const prefixSumCount = new Map();
+  prefixSumCount.set(0, 1);
+  let prefixSum = 0;
+  let count = 0;
+  for (let i = 0; i < nums.length; i++) {
+    prefixSum += nums[i];
+    if (prefixSumCount.has(prefixSum - k)) {
+      count += prefixSumCount.get(prefixSum - k);
+    }
+    prefixSumCount.set(prefixSum, (prefixSumCount.get(prefixSum) || 0) + 1);
+  }
+  return count;
+};
+```
+
+前缀和是指从数组开始到当前位置的元素之和。
+
+例如，数组 [1, 2, 3, 4, 5] 的前缀和为 [1, 3, 6, 10, 15]。
+
+## 哈希表
+
+哈希表是一种数据结构，它存储键值对，键是唯一的，值可以重复。
+
+例如，数组 [1, 2, 3, 4, 5] 的哈希表为 {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}。
