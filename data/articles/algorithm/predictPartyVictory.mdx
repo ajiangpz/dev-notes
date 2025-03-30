@@ -1,0 +1,65 @@
+---
+title: Dota2 参议院
+date: "2025-03-29"
+tags: ["algorithm", "greedy"]
+draft: false
+summary:
+---
+
+## 题目描述
+
+在 Dota 2 中，参议院由来自两派的参议员组成。现在参议院希望对一个法案进行投票。
+
+法案需要得到至少一半参议员的支持才能通过。
+
+参议员们轮流发言，并遵循以下规则：
+
+1. 每位参议员都有一个唯一的投票权，并且只能投 "Dire" 或 "Radiant" 其中一种。
+2. 每位参议员可以禁止一位参议员发言，禁止发言的参议员在发言时会失去投票权。
+
+## 解题思路
+
+1. 使用两个数组 radiant 和 dire 分别存储天辉和夜魇参议员的索引位置。
+2. 首先遍历输入字符串，将参议员按阵营分组。
+3. 模拟投票过程：
+   - 每次从两个队列中各取出一个参议员（索引较小的参议员先行动）
+   - 索引小的参议员可以禁止另一个参议员，并且可以参与下一轮投票
+   - 被禁止的参议员直接出局
+
+4.当某一方的参议员全部被禁止（队列为空）时，另一方获胜
+
+## 代码实现
+
+```js
+function predictPartyVictory(senate) {
+  const n = senate.length;
+  const radiant = [];
+  const dire = [];
+
+  for (let i = 0; i < n; i++) {
+    if (senate[i] === "R") {
+      radiant.push(i);
+    } else {
+      dire.push(i);
+    }
+  }
+
+  while (radiant.length > 0 && dire.length > 0) {
+    const rIndex = radiant.shift();
+    const dIndex = dire.shift();
+
+    if (rIndex < dIndex) {
+      radiant.push(rIndex + n);
+    } else {
+      dire.push(dIndex + n);
+    }
+  }
+
+  return radiant.length > 0 ? "Radiant" : "Dire";
+}
+```
+
+## 复杂度分析
+
+- 时间复杂度：O(n)，其中 n 是参议员的总数。每个参议员最多被处理一次。
+- 空间复杂度：O(n)，需要两个数组来存储参议员的索引位置。
