@@ -1,0 +1,30 @@
+---
+title: 把二叉搜索树转换为累加树
+date: "2025-03-29"
+tags: ["algorithm", "binary tree"]
+draft: false
+summary: 给定一个二叉搜索树（BST），将其转换为累加树（Greater Sum Tree），使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+---
+
+## 题目描述
+
+给定一个二叉搜索树（BST），将其转换为累加树（Greater Sum Tree），使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+
+## 解题思路
+
+我们可以使用反序中序遍历来解决这个问题。反序中序遍历的顺序是：右子树 -> 根节点 -> 左子树。
+
+```javascript
+var convertBST = function (root) {
+  let sum = 0;
+  const reverseInorder = (root) => {
+    if (!root) return;
+    reverseInorder(root.right);
+    root.val += sum;
+    sum = root.val;
+    reverseInorder(root.left);
+  };
+  reverseInorder(root);
+  return root;
+};
+```
