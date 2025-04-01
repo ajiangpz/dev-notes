@@ -1,7 +1,7 @@
 ---
 title: "125.验证回文串"
 date: "2025-03-10"
-tags: ["algorithm","string"]
+tags: ["algorithm", "stack", "two-pointers"]
 draft: false
 summary:
 ---
@@ -10,56 +10,48 @@ summary:
 
 给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，忽略字母的大小写。
 
-## 解题思路 
+## 解题思路
 
 1. 双指针
 
 2. 栈
 
-
 ## 代码实现
 
 ```javascript
 var isPalindrome = function (s) {
-
-    // 移除所有非字母数字字符
-    s = s.replace(/[^a-zA-Z0-9]/g, '');
-    s = s.toLowerCase();
-    let left = 0;
-    let right = s.length - 1;
-    while (left < right) {
-        if (s[left] !== s[right]) {
-            return false;
-        }
-        left++;
-        right--;
+  // 移除所有非字母数字字符
+  s = s.replace(/[^a-zA-Z0-9]/g, "");
+  s = s.toLowerCase();
+  let left = 0;
+  let right = s.length - 1;
+  while (left < right) {
+    if (s[left] !== s[right]) {
+      return false;
     }
-    return true;
+    left++;
+    right--;
+  }
+  return true;
 };
-
-
 ```
 
 ## 栈
 
 ```javascript
 var isPalindrome = function (s) {
-    // 移除所有非字母数字字符
-    s = s.replace(/[^a-zA-Z0-9]/g, '');
-    s = s.toLowerCase();
-    let stack = [];
-    for (let i = 0; i < s.length; i++) {
-        stack.push(s[i]);
+  // 移除所有非字母数字字符
+  s = s.replace(/[^a-zA-Z0-9]/g, "");
+  s = s.toLowerCase();
+  let stack = [];
+  for (let i = 0; i < s.length; i++) {
+    stack.push(s[i]);
+  }
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] !== stack.pop()) {
+      return false;
     }
-    for (let i = 0; i < s.length; i++) {
-        if (s[i] !== stack.pop()) {
-            return false;
-        }
-    }
-    return true;
+  }
+  return true;
 };
-
-
-
-
-
+```

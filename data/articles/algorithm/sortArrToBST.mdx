@@ -1,7 +1,7 @@
 ---
 title: "108.将有序数组转换为二叉搜索树"
 date: "2025-03-10"
-tags: ["algorithm","tree"]
+tags: ["algorithm", "tree"]
 draft: false
 summary:
 ---
@@ -10,31 +10,25 @@ summary:
 
 给定一个有序数组，将其转换为二叉搜索树。
 
-
-
 ## 解题思路
 
 1. 递归
 
-2. 
-
+2.
 
 ## 代码实现
 
 ```javascript
-var sortedArrayToBST = function(nums) {
-    // 将有序数组转换为二叉搜索树
-    if (nums.length === 0) return null;
-    // 找到中间的元素作为根节点
-    const mid = Math.floor(nums.length / 2);
-    const root = new TreeNode(nums[mid]);
-    // 递归构建左子树
-    root.left = sortedArrayToBST(nums.slice(0, mid));
-    // 递归构建右子树
-    root.right = sortedArrayToBST(nums.slice(mid + 1));
-    return root;
+var sortedArrayToBST = function (nums) {
+  // 将有序数组转换为二叉搜索树
+  if (nums.length === 0) return null;
+  // 找到中间的元素作为根节点
+  const mid = Math.floor(nums.length / 2);
+  const root = new TreeNode(nums[mid]);
+  // 递归构建左子树
+  root.left = sortedArrayToBST(nums.slice(0, mid));
+  // 递归构建右子树
+  root.right = sortedArrayToBST(nums.slice(mid + 1));
+  return root;
 };
-
-
 ```
-

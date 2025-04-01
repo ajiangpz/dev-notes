@@ -1,7 +1,7 @@
 ---
 title: 字符串转换整数(atoi)
-date: "2025-02-13" 
-tags: ["algorithm",""]
+date: "2025-02-13"
+tags: ["algorithm", "string"]
 draft: false
 summary:
 ---
@@ -17,38 +17,36 @@ summary:
 3. 逐位读取数字并累加,注意处理溢出情况
 4. 返回最终结果乘以符号
 
-# 代码实现 
+# 代码实现
 
 ```js
 var myAtoi = function (s) {
-    s = s.trim(); // 去除前导空格
-    if (s.length === 0) return 0;
+  s = s.trim(); // 去除前导空格
+  if (s.length === 0) return 0;
 
-    let sign = 1;
-    let i = 0;
+  let sign = 1;
+  let i = 0;
 
-    // 处理符号
-    if (s[i] === '-') {
-        sign = -1;
-        i++;
-    } else if (s[i] === '+') {
-        i++;
-    }
+  // 处理符号
+  if (s[i] === "-") {
+    sign = -1;
+    i++;
+  } else if (s[i] === "+") {
+    i++;
+  }
 
-    let num = 0;
-    const intMin = -(2 ** 31);
-    const intMax = 2 ** 31 - 1;
+  let num = 0;
+  const intMin = -(2 ** 31);
+  const intMax = 2 ** 31 - 1;
 
-    // 读取数字部分
-    while (i < s.length && s[i] >= '0' && s[i] <= '9') {
-        num = num * 10 + (s[i].charCodeAt(0) - '0'.charCodeAt(0));
-        if (sign * num < intMin) return intMin; // 处理溢出
-        if (sign * num > intMax) return intMax;
-        i++;
-    }
+  // 读取数字部分
+  while (i < s.length && s[i] >= "0" && s[i] <= "9") {
+    num = num * 10 + (s[i].charCodeAt(0) - "0".charCodeAt(0));
+    if (sign * num < intMin) return intMin; // 处理溢出
+    if (sign * num > intMax) return intMax;
+    i++;
+  }
 
-    return sign * num;
+  return sign * num;
 };
 ```
-
-

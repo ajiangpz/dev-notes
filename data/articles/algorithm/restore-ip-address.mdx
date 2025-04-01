@@ -1,7 +1,7 @@
 ---
 title: "93.复原IP地址"
 date: "2025-03-09"
-tags: ["algorithm","backtracking"]
+tags: ["algorithm", "backtracking"]
 draft: false
 summary:
 ---
@@ -12,46 +12,38 @@ summary:
 
 有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间），每个整数之间用 '.' 分隔。
 
-
 ## 解题思路
 
 1. 回溯算法
 
-2.  
-
+2.
 
 ## 代码实现
 
 ```javascript
-
-var restoreIpAddresses = function(s) {
-    //  s= "25525511135"
-    const result = [];
-    const len = s.length;
-    if (len < 4 || len > 12) return result;
-    const backtrack = (start, path) => {
-        // 如果已经分割了4段，并且遍历完了字符串，则将结果加入结果数组
-        if (path.length === 4 && start === len) {
-            result.push(path.join('.'));
-            return;
-        }
-        // 遍历每个可能的分割点
-        for (let i = start; i < Math.min(start + 3, len); i++) {
-            const segment = s.slice(start, i + 1);
-            // 如果段落长度大于1且以0开头，跳过
-            if (segment.length > 1 && segment[0] === '0') continue;
-            // 如果段落大于255，跳过
-            if (parseInt(segment) > 255) continue;
-            // 递归处理下一个段落
-            backtrack(i + 1, [...path, segment]);
-        }
-    };
-    backtrack(0, []);
-    return result;
+var restoreIpAddresses = function (s) {
+  //  s= "25525511135"
+  const result = [];
+  const len = s.length;
+  if (len < 4 || len > 12) return result;
+  const backtrack = (start, path) => {
+    // 如果已经分割了4段，并且遍历完了字符串，则将结果加入结果数组
+    if (path.length === 4 && start === len) {
+      result.push(path.join("."));
+      return;
+    }
+    // 遍历每个可能的分割点
+    for (let i = start; i < Math.min(start + 3, len); i++) {
+      const segment = s.slice(start, i + 1);
+      // 如果段落长度大于1且以0开头，跳过
+      if (segment.length > 1 && segment[0] === "0") continue;
+      // 如果段落大于255，跳过
+      if (parseInt(segment) > 255) continue;
+      // 递归处理下一个段落
+      backtrack(i + 1, [...path, segment]);
+    }
+  };
+  backtrack(0, []);
+  return result;
 };
 ```
-
-
-    
-
-

@@ -1,7 +1,7 @@
 ---
 title: "Rotate Image"
 date: "2025-03-05"
-tags: ["algorithm", "array","matrix"]
+tags: ["algorithm", "matrix"]
 draft: false
 summary:
 ---
@@ -19,37 +19,33 @@ summary:
 输出：[[7,4,1],[8,5,2],[9,6,3]]
 ```
 
-
-## 解题思路    
+## 解题思路
 
 1. 对角线翻转
 2. 水平翻转
 
 ## 代码实现
 
-```javascript   
-var rotate = function(matrix) {
-    const n = matrix.length;
-    // 对角线翻转
-    for (let i = 0; i < n; i++) {
-        // j < i 避免重复翻转
-        for (let j = 0; j < i; j++) {
-            [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
-        }
-    }   
-    // 水平翻转
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < n / 2; j++) {
-            [matrix[i][j], matrix[i][n - j - 1]] = [matrix[i][n - j - 1], matrix[i][j]];
-        }
-    }       
+```javascript
+var rotate = function (matrix) {
+  const n = matrix.length;
+  // 对角线翻转
+  for (let i = 0; i < n; i++) {
+    // j < i 避免重复翻转
+    for (let j = 0; j < i; j++) {
+      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
+    }
+  }
+  // 水平翻转
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n / 2; j++) {
+      [matrix[i][j], matrix[i][n - j - 1]] = [
+        matrix[i][n - j - 1],
+        matrix[i][j]
+      ];
+    }
+  }
 
-    return matrix;
+  return matrix;
 };
-
 ```
-
-
-
-
-
