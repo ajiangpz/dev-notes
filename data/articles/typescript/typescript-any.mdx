@@ -1,0 +1,31 @@
+---
+title: typescript 中的any类型
+date: "2025-05-15"
+tags: ["typescript"]
+summary: "typescript 中的any类型"
+---
+
+# typescript 中的any类型
+
+## 什么是any类型？
+any 就是任何的意思，可以赋值给任何类型，也可以当作任何类型使用。
+
+
+## 在什么场景使用？
+1.逐步迁移JavaScript项目，跳过 typescript 类型检查
+2.没有类型定义的第三方库
+3.动态内容解析（不确定的数据）
+
+## 替代方案 
+1.unknown + 类型判断
+unknown 只能赋值给 any 和 unknown 类型，类型安全，但是 unknown 可以被赋值任何类型。
+unknown 不能直接调用属性，需要经过类型判断后才能调用
+```typescript
+let u: unknown = 42;
+u.toFixed();    // ❌ 编译错误：对象类型为 'unknown'
+if (typeof u === 'number') {
+  u.toFixed();  // ✅ 编译通过
+}
+```
+2.联合类型
+3.可选属性

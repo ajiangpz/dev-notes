@@ -6,9 +6,9 @@
   "email": "捡瓶子",
   "twitter": "捡瓶子",
   "linkedin": "捡瓶子",
-  "github": "捡瓶子",
+  "github": "捡瓶子\r",
   "body": {
-    "raw": "\n\n\n",
+    "raw": "\r\n\r\n\r\n",
     "code": "var Component=(()=>{var f=Object.create;var o=Object.defineProperty;var g=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var _=Object.getPrototypeOf,d=Object.prototype.hasOwnProperty;var l=(t,n)=>()=>(n||t((n={exports:{}}).exports,n),n.exports),j=(t,n)=>{for(var e in n)o(t,e,{get:n[e],enumerable:!0})},c=(t,n,e,i)=>{if(n&&typeof n==\"object\"||typeof n==\"function\")for(let r of p(n))!d.call(t,r)&&r!==e&&o(t,r,{get:()=>n[r],enumerable:!(i=g(n,r))||i.enumerable});return t};var v=(t,n,e)=>(e=t!=null?f(_(t)):{},c(n||!t||!t.__esModule?o(e,\"default\",{value:t,enumerable:!0}):e,t)),M=t=>c(o({},\"__esModule\",{value:!0}),t);var s=l((C,m)=>{m.exports=_jsx_runtime});var w={};j(w,{default:()=>x,frontmatter:()=>h});var a=v(s()),h={name:\"\\u6361\\u74F6\\u5B50\",avatar:\"/static/images/avatar.svg\",occupation:\"\\u6361\\u74F6\\u5B50\",company:\"\\u6361\\u74F6\\u5B50\",email:\"\\u6361\\u74F6\\u5B50\",twitter:\"\\u6361\\u74F6\\u5B50\",linkedin:\"\\u6361\\u74F6\\u5B50\",github:\"\\u6361\\u74F6\\u5B50\"};function u(t){return(0,a.jsx)(a.Fragment,{})}function x(t={}){let{wrapper:n}=t.components||{};return n?(0,a.jsx)(n,{...t,children:(0,a.jsx)(u,{...t})}):u(t)}return M(w);})();\n;return Component;"
   },
   "_id": "authors/default.mdx",
