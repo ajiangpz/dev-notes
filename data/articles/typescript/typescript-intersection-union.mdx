@@ -1,0 +1,49 @@
+---
+title: 交叉类型和联合类型
+date: "2025-05-16"
+tags: ["typescript"]
+---
+
+## 交叉类型
+将多个对象类型使用 & 连接，得到一个新的类型，这个新的类型满足多个类型的要求。如果A和B中有相同属性，但是类型不同，
+则该属性会变成 never
+```ts
+type User = {
+  name: string,
+  email: string
+}
+
+type Admin = User & { password: string };
+
+let user: User = {
+  name: "Tom",
+  email: "user@qq.com"
+}
+
+let admin: Admin = {
+  name: "Jerry",
+  email: "admin@qq.com",
+  password: "admin"
+}
+```
+> interface extends 也可以实现类似功能
+
+## 联合类型
+多个类型使用 | 连接，得到一个新的类型，这个类型支持其中任一类型，但是不能是多个类型的组合
+
+```ts
+type Language = "cn" | "en" | "fr" | "es";
+type User = {
+  name: string,
+  email: string,
+  language: Language
+}
+
+let user: User = {
+  name: "user",
+  email: "11@qq.com",
+  language: "en"
+}
+
+```
+

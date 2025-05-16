@@ -1,0 +1,93 @@
+---
+title: typescript 如何为数组和对象定义类型
+date: "2025-05-15"
+tags: ["typescript"]
+---
+
+## 为数组定义类型
+1.数组字面量
+```typescript
+let arr:number[] = [1,2,3,4]
+```
+2.Array 类型
+```typescript
+let arr:Array<number> = [1,2,3,4]
+```
+
+## 为对象添加类型
+
+1.对象字面量
+```typescript  
+let setUser = (obj:{user:string,age?:number})=>{
+    console.log(obj.user.toUpperCase());
+    if(obj.age !== undefined){
+      console.log(obj.age.toFixed())
+    }
+}
+```
+> 如果是可选属性，调用时需要判断是否为 undefined 
+
+2.Interface
+```typescript
+interface User {
+  user: string,
+  age?: number
+}
+
+let setUser = (obj: User) => {
+  console.log(obj.user.toUpperCase());
+  if (obj.age !== undefined) {
+    console.log(obj.age.toFixed())
+  }
+}
+```
+
+3.类型别名
+```typescript
+type User = {
+  user: string,
+  age?: number
+}
+
+let setUser = (obj: User) => {
+  console.log(obj.user.toUpperCase());
+  if (obj.age !== undefined) {
+    console.log(obj.age.toFixed())
+  }
+}
+```
+
+4.Record类型 
+``` typescript
+type Prop = "name" | "country";
+type User = Record<Prop, string>
+let user: User = {
+  name: "Jerry",
+  country: "China"
+}
+
+```
+> record 类型适用于固定键名集合、动态键名但键名为字符串或者枚举。不适用每一个字段的
+类型不同的情况，这种情况使用 interface 和 type 更好。
+
+
+## 为对象数组、嵌套对象添加类型
+```ts
+interface User {
+  name: string,
+  country: string,
+  children?: User[]
+}
+
+const userList: Array<User> = [{ name: "Jerry", country: "cn" }, {
+  name: "Tom", country: "fr", children: [{
+    name: "Jack", country: "fr"
+  }]
+}]
+```
+
+
+
+
+
+
