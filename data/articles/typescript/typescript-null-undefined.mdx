@@ -1,0 +1,65 @@
+---
+title: typescript 中的 null 和 undefined 类型
+date: "2025-05-19"
+tags: ["typescript"]
+summary: "typescript 中的 null 和 undefined 类型"
+---
+
+
+
+## 什么是undefined 类型
+undefined 类型表示变量声明了但是还未赋值的默认值
+
+
+## 什么是null类型
+null 表示值为空 ，需要显式赋值
+
+## 特性
+
+1. 如果typescript未开启 strictNullChecks（严格空值检查），则
+undefined和null可以是赋值给任何类型
+
+2.如果开启了 strictNullChecks（严格空值检查），则只能赋值给相同类型
+
+## 最佳实践
+1. 开启 strictNullChecks（严格空值检查），使用联合类型显示声明值有可能是null或者undefined
+```typescript
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+```
+```typescript
+let name:string|null = null;
+
+```
+
+2. 使用可选参数代替undefined类型
+```typescript
+interface User {
+    name:string,
+    email?:string
+}
+```
+
+
+3. 使用空值合并运算符设置默认值
+
+```typescript  
+
+const name = userInput ?? "默认值"
+
+```
+
+4. 使用 可选链避免空指针异常
+
+```typescript
+
+const username = user?.profile?.name
+
+```
+5. 避免同时使用 undefined 和 null
+
+undefined 表示没有值
+null 表示值为空
+
+

@@ -1,0 +1,76 @@
+---
+title: typescript 中的可选属性和只读属性
+date: "2025-05-19"
+tags: ["typescript"]
+summary: "typescript 中的可选属性和只读属性"
+---
+## 可选属性
+在属性后加上？，使用时可选择是否提供该属性
+
+## 只读属性
+在属性前面加上 readonly ,使用时一旦被赋值则不能修改，常用于id，创建时间
+
+
+## 综合示例
+
+```typescript
+
+
+// 选择部分属性
+type MyPartial<T> = {
+  [k in keyof T]?: T[k]
+}
+
+// 整个类型只可读
+type MyReadonly<T> = {
+  readonly [k in keyof T]: T[k]
+}
+
+// 去掉只可读和可选
+type WithoutReadonlyOptions<T> = {
+    -readonly [k in keyof T] -?:T[k]
+}
+
+type User = {
+  readonly id: number,
+  name: string,
+  email: string
+}
+
+type Admin = MyReadonly<User>;
+
+type Guest = MyPartial<User>;
+
+
+let user: User = {
+  id: 1,
+  name: "Jerry",
+  email: "jerry.aa.com"
+}
+user.id = 2;
+// Cannot assign to 'id' because it is a read-only property.(2540)
+
+
+let admin: Admin = {
+  id: 2,
+  name: "admin",
+  email: "admin.aa.com"
+}
+admin.name = "Jerry";
+// Cannot assign to 'name' because it is a read-only property.(2540)
+
+
+
+let guest: Guest = {
+  name: "guest"
+}
+// 可选属性
+
+// 去掉可选和只读
+let guest2: WithoutReadonlyOptions<Guest> = {
+  id: 3,
+  name: "guest2",
+  email: "guest@email.com"
+}
+// Type '{ id: number; }' is missing the following properties from type 'WithoutReadonlyOptions<MyPartial<User>>': name, email
+```

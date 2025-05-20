@@ -1,0 +1,41 @@
+---
+title: 交叉类型和联合类型
+date: "2025-05-19"
+tags: ["typescript"]
+---
+
+## 共同点
+1. 定义对象类型
+2. 定义函数签名
+3. 支持合并
+
+
+## 不同点
+1. interface 支持声明合并，即两个相同名称的 interface 会自动合并
+```typescript
+interface User {
+  name: string
+}
+
+interface User {
+  email: string
+}
+
+
+let user: User = {
+  name: "Jerry",
+  email: "aaaa@qq.com"
+}
+```
+1. type支持定义string，number等基本类型
+2. type支持联合类型、交叉类型
+3. type支持映射类型、条件类型
+
+```typescript
+// 映射User类型的key，生成一个属性可选的 PartialUser 类型
+type PartialUser = {
+  [key in keyof User]?: User[key]
+}
+```
+
+

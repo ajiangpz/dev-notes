@@ -1,0 +1,43 @@
+---
+title: typescript 中的Tuple类型
+date: "2025-05-19"
+tags: ["typescript"]
+summary: "typescript 中的Tuple类型"
+---
+
+
+
+## 什么是 Tuple 类型？
+一种特殊的数组类型，允许限制元素的数量、类型和顺序。
+
+## 特性
+1. 可选属性
+
+```typescript
+let t:[number,string?];
+t = [1];
+t = [1,'1'];
+```
+2. rest 剩余元素
+```typescript
+let t:[number,...string[]];
+t = [1,'1','2'];
+```
+3. 只读元组
+```typescript
+let t:readonly[number,string] = [1,'1'];
+t[0] = 12;
+//Cannot assign to '0' because it is a read-only property.(2540)
+```
+
+## 在什么场景使用？
+1. 用于函数返回多个值
+2. 用于标注特定的结构明确的数组
+
+``` typescript
+
+let errorMessage: [number, string];
+errorMessage = [404, 'Not Found'];
+
+```
+

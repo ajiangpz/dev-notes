@@ -1,0 +1,57 @@
+---
+title: typescript 有哪些类型
+date: "2025-05-19"
+tags: ["typescript"]
+summary: "typescript 有哪些类型"
+---
+
+## 基本类型
+```typescript
+string,number,boolean,symbol,bigint,null,undefined
+```
+
+## 对象类型
+1. 通用对象 object 
+2. interface type
+
+## 数组类型和元组类型
+
+## 函数类型
+
+## Class 类型
+```typescript
+interface Greeter {
+  greet(): void;
+}
+// 使用 类实现接口
+class Student implements Greeter {
+  greet() {
+    console.log("Hello!");
+  }
+}
+```
+
+## 联合类型
+
+## 交叉类型
+
+## 字面量类型
+
+## 枚举类型
+
+## 特殊类型
+
+## 泛型
+
+## 工具类型
+
+```typescript
+const user = {
+  id: 1,
+  name: "Tom",
+};
+
+type User = typeof user;      // 从变量推断类型
+type UserKeys = keyof User;   // "id" | "name"
+```
+

@@ -1,0 +1,64 @@
+---
+title: typescript 中的声明文件
+date: "2025-05-20"
+tags: ["typescript"]
+summary: "typescript 中的声明文件"
+---
+
+
+
+## 什么是声明文件
+typescript 中以 `d.ts`结尾的文件，可以让 typescript 能在不直接
+查看代码的情况下进行类型声明和代码补全。
+
+## 应用场景
+
+1. 为JavaScript库提供类型声明
+2. 将 类型公开给其他项目使用
+3. 为 已有的JavaScript项目添加类型声明
+
+
+## 如何书写声明文件
+1. 全局变量
+```typescript
+// global.d.ts
+declare const Version:string;
+```
+
+2. 为一个模块编写声明文件
+
+```typescript
+declare module "math-lib" {
+    export function add(a:number,b:number):number;
+}
+```
+3. 为一个库编写声明文件
+```typescript
+// index.d.ts
+export * from './components/Button';
+export * from './components/Dialog';
+export * from './utils/dom';
+
+// components/Button.d.ts
+import { DefineComponent } from 'vue';
+export const Button: DefineComponent<{ type?: 'primary' | 'ghost' }>;
+
+// utils/dom.d.ts
+export function getOffset(el: HTMLElement): { top: number; left: number };
+```
+
+## 自动生成 .d.ts 文件
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist"
+  }
+}
+// 执行 npx tsc
+```
+
+
+
