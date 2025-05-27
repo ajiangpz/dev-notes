@@ -1,0 +1,77 @@
+---
+title: 泛型有什么作用？
+date: "2025-05-26"
+tags: ["typescript"]
+summary: "泛型有什么作用？"
+---
+## 泛型的作用
+1. 代码复用，同样的逻辑可复用给多种类型
+2. 类型安全 
+```typescript
+interface HasLength {
+  length: number;
+}
+
+function logLength<T extends HasLength>(value: T): T {
+  console.log(value.length);
+  return value;
+}
+```
+3. 增强灵活性
+
+## 应用场景
+1. 工具函数库（map，filter，clone）
+2. 数据结构 
+3. 前端表单框架
+```typescript
+// 每个字段的类型由泛型 T 决定
+interface FormField<T> {
+  label: string
+  name: string
+  type: 'input' | 'select' | 'checkbox' | 'date'
+  value: T
+  options?: T extends string ? string[] : never
+}
+```
+4.与后端API接口通信
+
+定义接口响应类型
+```typescript
+// 后端统一响应格式
+interface ApiResponse<T> {
+  code: number
+  message: string
+  data: T
+}
+
+```
+定义请求和响应类型
+```typescript
+function request<TReq, TRes>(
+  url: string,
+  data: TReq
+): Promise<ApiResponse<TRes>> {
+  return axios.post(url, data).then(res => res.data)
+}
+
+```
+
+```typescript
+interface LoginParams {
+  username: string
+  password: string
+}
+
+interface LoginResult {
+  token: string
+  userId: number
+}
+
+const res = await request<LoginParams, LoginResult>('/api/login', {
+  username: 'admin',
+  password: '123456'
+})
+
+console.log(res.data.token) // ✅ 类型自动推导为 string
+
+```

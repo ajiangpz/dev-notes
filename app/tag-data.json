@@ -1,5 +1,4 @@
 {
-  "canvas": 3,
   "algorithm": 74,
   "two-pointers": 17,
   "hash-map": 6,
@@ -20,6 +19,7 @@
   "hash-table": 1,
   "string": 1,
   "trie": 1,
+  "canvas": 3,
   "javascript": 3,
   "面试": 1,
   "前端": 1,
