@@ -1,0 +1,94 @@
+---
+title: typescript 中的函数重载
+date: "2025-05-29"
+tags: ["typescript"]
+summary: "typescript 中的函数重载"
+---
+ 在 **TypeScript** 中，函数重载（Function Overloading）是通过为一个函数声明多个\*\*函数签名（function signatures）\*\*来实现的。这使得同一个函数名可以根据参数类型或数量的不同，执行不同的逻辑。
+
+---
+
+## ✅ 实现方式概览
+
+TypeScript 的函数重载由两部分组成：
+
+1. **多个函数签名（Overload Signatures）**
+2. **一个函数实现（Implementation Signature）**
+
+---
+
+## 🔧 示例讲解
+
+```ts
+// 1. 函数重载签名
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+
+// 2. 实际实现
+function add(a: any, b: any): any {
+  return a + b;
+}
+```
+
+### 💡解释：
+
+* 上面两个是**重载签名**，告诉编译器支持哪些参数组合。
+* 最后一个是**实际实现函数**，通常使用 `any` 或联合类型来兼容不同参数。
+
+---
+
+## 🧠 使用要点
+
+1. **实现体只能有一个**（即最后那个 `function add(a: any, b: any)`）。
+2. **实现体的参数不能比签名支持更少**，否则会类型错误。
+3. 编译器根据签名推断参数类型和返回类型。
+
+---
+
+## 🎯 更复杂示例
+
+```ts
+function getInfo(id: number): string;
+function getInfo(name: string): string;
+function getInfo(value: number | string): string {
+  if (typeof value === 'number') {
+    return `ID is ${value}`;
+  } else {
+    return `Name is ${value}`;
+  }
+}
+
+console.log(getInfo(101));       // 输出: ID is 101
+console.log(getInfo("Alice"));   // 输出: Name is Alice
+```
+
+---
+
+## 🧱 用于类的方法重载
+
+```ts
+class Logger {
+  log(message: string): void;
+  log(errorCode: number): void;
+  log(data: string | number): void {
+    console.log("Logged:", data);
+  }
+}
+
+const logger = new Logger();
+logger.log("Something happened");
+logger.log(404);
+```
+
+---
+
+## 🛑 注意事项
+
+* 如果你直接调用实现体中未在签名中声明过的参数组合，**会报错**：
+
+  ```ts
+  add(true, false); // ❌ 报错：没有与此调用匹配的重载
+  ```
+
+---
+

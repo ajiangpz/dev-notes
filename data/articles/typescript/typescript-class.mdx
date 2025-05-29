@@ -1,0 +1,217 @@
+---
+title: typescript 中的类
+date: "2025-05-28"
+tags: ["typescript"]
+summary: "typescript 中的类"
+---
+
+TypeScript 中的类（`class`）是在 JavaScript 的基础上**增强了类型系统**和面向对象编程能力的一种结构，是构建复杂应用的核心机制之一。
+
+---
+
+## ✅ 一、类的本质
+
+TypeScript 中的类是对 ES6 中 `class` 的扩展，增加了**类型注解、访问修饰符、接口实现、抽象类**等功能，使其更贴近传统面向对象语言（如 Java、C#）中的类定义方式。
+
+---
+
+## ✅ 二、类的基本语法
+
+```ts
+class Person {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet(): void {
+    console.log(`Hello, I'm ${this.name}`);
+  }
+}
+```
+
+---
+
+## ✅ 三、类的关键特性
+
+### 1. **构造函数（constructor）**
+
+初始化类的实例，可以为参数添加类型注解：
+
+```ts
+constructor(public name: string) {}
+```
+
+上面语法是参数属性的简写，等同于：
+
+```ts
+public name: string;
+constructor(name: string) {
+  this.name = name;
+}
+```
+
+---
+
+### 2. **访问修饰符**
+
+TypeScript 提供了三种访问权限：
+
+| 修饰符         | 含义          |
+| ----------- | ----------- |
+| `public`    | 默认，任何地方都能访问 |
+| `private`   | 只能在类内部访问    |
+| `protected` | 类及其子类可访问    |
+
+```ts
+class Animal {
+  protected move() {}
+}
+
+class Dog extends Animal {
+  bark() {
+    this.move(); // ✅ 合法
+  }
+}
+```
+
+---
+
+### 3. **继承（extends）**
+
+使用 `extends` 继承另一个类：
+
+```ts
+class Student extends Person {
+  study() {
+    console.log(`${this.name} is studying`);
+  }
+}
+```
+
+---
+
+### 4. **接口实现（implements）**
+
+类可以实现一个或多个接口，保证结构符合接口定义：
+
+```ts
+interface CanRun {
+  run(): void;
+}
+
+class Runner implements CanRun {
+  run() {
+    console.log("Running...");
+  }
+}
+```
+
+---
+
+### 5. **抽象类与抽象方法**
+
+抽象类不能被实例化，只能被继承；抽象方法必须由子类实现：
+
+```ts
+abstract class Shape {
+  abstract area(): number;
+}
+
+class Circle extends Shape {
+  constructor(public radius: number) {
+    super();
+  }
+  area(): number {
+    return Math.PI * this.radius * this.radius;
+  }
+}
+```
+
+---
+
+### 6. **静态成员（static）**
+
+静态属性/方法属于类本身而不是实例：
+
+```ts
+class MathUtil {
+  static PI = 3.14;
+  static square(x: number): number {
+    return x * x;
+  }
+}
+
+console.log(MathUtil.square(5)); // 25
+```
+
+---
+
+### 7. **只读属性（readonly）**
+
+一旦赋值就不能修改：
+
+```ts
+class Book {
+  readonly title: string;
+  constructor(title: string) {
+    this.title = title;
+  }
+}
+```
+
+---
+
+## ✅ 四、类的高级特性
+
+### ✅ 泛型类
+
+```ts
+class Box<T> {
+  content: T;
+  constructor(value: T) {
+    this.content = value;
+  }
+}
+const box = new Box<number>(123);
+```
+
+---
+
+### ✅ 装饰器支持（需要配置）
+
+用于注解、元编程（如依赖注入、权限控制）：
+
+```ts
+function Logger(constructor: Function) {
+  console.log(`Class ${constructor.name} is created.`);
+}
+
+@Logger
+class User {}
+```
+
+---
+
+## ✅ 五、类 vs 接口
+
+* 接口仅用于定义结构，不会生成代码；
+* 类既定义结构又可以包含实现（方法/构造器等）；
+* 接口可用于描述类的形状，让类必须满足接口的契约。
+
+---
+
+## ✅ 六、类在工程中的价值
+
+* 提高代码的**封装性**、**重用性**和**可维护性**
+* 与类型系统结合后，更易于发现问题和进行自动补全
+* 是很多现代框架（如 Angular、NestJS）的基础构建块
+
+---
+
+## ✅ 七、总结一句话：
+
+**TypeScript 中的类不仅继承了 JavaScript 的语法优势，还借助强类型系统，使面向对象编程更加严谨、高效、健壮。**
+
+如果你已经熟悉 ES6 的类，TypeScript 的类就是在这之上的“带类型、安全版”的升级。

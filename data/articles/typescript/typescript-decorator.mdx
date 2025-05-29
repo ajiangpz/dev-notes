@@ -1,0 +1,166 @@
+---
+title: typescript 中的装饰器
+date: "2025-05-28"
+tags: ["typescript"]
+summary: "typescript 中的装饰器"  
+---
+在 TypeScript 中，**装饰器（Decorator）**是一种特殊的语法，用于**修改类及其成员的行为**。它本质上是一个函数，可以**注入元数据、拦截类成员定义过程，或进行行为扩展**。
+
+## 一、装饰器的本质
+
+装饰器是一个函数，用于“装饰”：
+
+* 类（Class Decorator）
+* 属性（Property Decorator）
+* 方法（Method Decorator）
+* 访问器（Accessor Decorator）
+* 参数（Parameter Decorator）
+
+使用时，通过 `@装饰器名称` 语法加在类或类成员前面。
+
+---
+
+## 二、装饰器的应用场景
+
+* 日志记录
+* 权限控制
+* 数据校验
+* 自动绑定 this（比如绑定事件处理函数）
+* 注入依赖（如在 NestJS 中）
+
+---
+
+## 三、装饰器的分类和示例
+
+### 1. 类装饰器
+
+```ts
+function Logger(constructor: Function) {
+  console.log(`Class ${constructor.name} is created.`);
+}
+
+@Logger
+class Person {}
+```
+
+输出：`Class Person is created.`
+
+---
+
+### 2. 方法装饰器
+
+```ts
+function Log(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`Calling ${propertyKey} with`, args);
+    return originalMethod.apply(this, args);
+  };
+}
+
+class Calculator {
+  @Log
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+```
+
+---
+
+### 3. 属性装饰器
+
+```ts
+function Readonly(target: any, propertyKey: string) {
+  Object.defineProperty(target, propertyKey, {
+    writable: false,
+  });
+}
+
+class Example {
+  @Readonly
+  name: string = 'TS';
+}
+```
+
+> 注意：属性装饰器无法直接修改值或访问 descriptor，只能拿到 `target` 和 `propertyKey`。
+
+---
+
+### 4. 参数装饰器
+
+```ts
+function LogParam(target: any, methodName: string, parameterIndex: number) {
+  console.log(`Parameter at index ${parameterIndex} in method ${methodName}`);
+}
+
+class Service {
+  greet(@LogParam name: string) {
+    console.log(`Hello, ${name}`);
+  }
+}
+```
+
+---
+
+## 四、启用装饰器
+
+在 `tsconfig.json` 中开启以下选项：
+
+```json
+{
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true //（配合 reflect-metadata 使用）
+}
+```
+
+---
+
+## 五、与元编程的结合
+
+装饰器常与 `reflect-metadata` 库结合，用于获取类型信息，实现依赖注入等高级功能。
+
+```bash
+npm install reflect-metadata
+```
+
+```ts
+import 'reflect-metadata';
+
+function Inject(type: any) {
+  return function (target: any, propertyKey: string) {
+    const typeInfo = Reflect.getMetadata("design:type", target, propertyKey);
+    console.log(`Injecting ${typeInfo.name} into ${propertyKey}`);
+  };
+}
+
+class Service {}
+
+class App {
+  @Inject(Service)
+  service: Service;
+}
+```
+
+---
+
+## 六、装饰器的优缺点
+
+### ✅ 优点
+
+* 代码更具可读性和语义性
+* 强大的元编程能力
+* 能实现 AOP（面向切面编程）
+
+### ❌ 缺点
+
+* 本质是语法糖，容易滥用
+* 编译后才生效，调试成本高
+* 标准化仍未最终确定（TC39 stage 3）
+
+---
+
+## 七、总结
+
+装饰器是 TypeScript 提供的高级特性，使我们可以通过函数“装饰”类及其成员，增强其行为或功能。在实际开发中，常用于框架中（如 NestJS、Angular），也是构建底层抽象和元编程的重要工具。理解装饰器，有助于我们更深入地掌握 TypeScript 和面向对象编程思想。
+
