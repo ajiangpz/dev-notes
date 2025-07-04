@@ -1,0 +1,46 @@
+---
+title: Typescript 中的 never 类型是什么
+date: "2025-05-18"
+tags: ["typescript"]
+---
+
+## never 类型定义
+never 类型表示这个类型不可能发生，他是底层类型，因此一个类型被声明为 never，则只能被赋值为never。
+
+## never 的使用场景
+
+### 一个不可能返回的函数，比如报错
+```typescript
+function throwError(message:string):never{
+    throw new Error(message);
+}
+```
+
+### 函数中是一个死循环
+```typescript
+function loop(): never {
+  while (true) {
+    console.log(1)
+  }
+}
+```
+
+### 用于表示不可能出现的情况，如果出现该情况发生了，则typescript会报错
+
+```typescript
+type Shape = { kind: "Circle", radius: number } | { kind: "Square", side: number } | { kind: "Oval", x: number, y: number };
+
+function getArea(shape: Shape) {
+  let area: number = 0;
+  switch (shape.kind) {
+    case "Circle": area = Math.PI * shape.radius ** 2; break;
+    case "Square": area = Math.pow(shape.side, 2); break;
+    default:
+      const exceptKind: never = shape;
+      // 这种情况出现了则表示缺少了Oval的判断
+      // Type '{ kind: "Oval"; x: number; y: number; }' is not assignable to type 'never'.
+      area = exceptKind;
+  }
+  return area;
+}
+```
