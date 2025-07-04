@@ -1,0 +1,236 @@
+---
+title: reasy-ui组件库多主题实现方式
+date: "2025-07-04"
+tags: ["webpack"]
+summary: "reasy-ui组件库多主题实现方式"
+---
+
+## reasy-ui组件库多主题实现方式
+
+### 获取命令行参数 theme = tenda/ipcom/trade/all
+```js
+  let theme = process.argv[2] || "tenda";
+  if (theme === "all") {
+    themes = ["tenda", "ipcom", "trade"];
+  } else {
+    themes = [theme];
+  }
+```
+
+### 根据 theme 生成对应的scss主题文件路径，如 variables-ipcom.scss
+
+```js
+function getConfig(theme) {
+  if (theme === undefined) {
+    theme = process.env.THEME;
+  }
+
+  let outPath = "/dist",
+    isProd = process.env.NODE_ENV === "production";
+  switch (theme) {
+    case "trade":
+      outPath = "/dist/trade";
+      break;
+    case "ipcom":
+      outPath = "/dist/ipcom";
+      break;
+    default:
+      theme = "tenda";
+  }
+
+  return {
+    isProd,
+    variables: `@import "src/scss/varibles-${theme}.scss";`,
+    outPath
+  };
+}
+
+module.exports = {
+  getConfig
+};
+
+```
+
+### 使用 definePlugin 定义全局主题变量，处理js代码中的主题问题
+```js
+  cfg.plugins.push(
+    new webpack.DefinePlugin({
+      "process.env.THEME": JSON.stringify(theme)
+    })
+  );
+
+```
+
+
+### 使用 sass-loader 的 prependData配置项注入 scss变量文件
+
+```js
+  {
+    loader: "sass-loader",
+    options: {
+      prependData: variables
+    }
+  }
+```
+
+
+## 完整配置
+```js
+const path = require("path");
+const webpack = require("webpack");
+const _ = require("lodash");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+// 导入webpack配置
+const component = require("./webpack.component.js");
+const publish = require("./webpack.publish.js");
+const publishFull = require("./webpack.publish.full.js");
+const scss = require("./webpack.scss.js");
+const { getConfig } = require("./config");
+
+// 主题配置
+const AVAILABLE_THEMES = ["tenda", "ipcom", "trade"];
+const DEFAULT_THEME = "tenda";
+
+/**
+ * 执行webpack构建
+ * @param {Object|Array} config - webpack配置
+ * @returns {Promise} 构建结果promise
+ */
+async function buildWithWebpack(config) {
+  return new Promise((resolve, reject) => {
+    webpack(config, (err, stats) => {
+      if (err) {
+        console.error("构建错误:", err);
+        reject(err);
+        return;
+      }
+
+      const output = stats.toString({
+        chunks: true,
+        colors: true
+      });
+
+      console.log(output);
+      
+      if (stats.hasErrors()) {
+        reject(new Error("构建过程中出现错误，请检查控制台输出"));
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+/**
+ * 处理webpack配置
+ * @param {Object} config - 原始webpack配置
+ * @param {string} variables - SCSS变量
+ * @param {string} outPath - 输出路径
+ * @param {string} theme - 主题名称
+ */
+function enhanceWebpackConfig(config, variables, outPath, theme) {
+  // 设置输出路径
+  const absoluteOutPath = path.join(path.resolve(__dirname, ".."), outPath);
+  
+  // 基础配置
+  config.mode = "production";
+  config.output.path = absoluteOutPath;
+
+  // 注入主题环境变量
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      "process.env.THEME": JSON.stringify(theme)
+    })
+  );
+
+  // 处理样式加载器配置
+  const sassLoader = {
+    loader: "sass-loader",
+    options: {
+      prependData: variables
+    }
+  };
+
+  const baseLoaders = ["css-loader", "postcss-loader", sassLoader];
+
+  // 根据noCss标志决定是否提取CSS文件
+  const styleLoaders = config.noCss
+    ? baseLoaders
+    : [MiniCssExtractPlugin.loader, ...baseLoaders];
+
+  delete config.noCss;
+
+  // 添加样式处理规则
+  config.module.rules.push({
+    test: /\.(scss|css)$/,
+    use: styleLoaders,
+    exclude: /node_modules/
+  });
+}
+
+/**
+ * 获取指定主题的所有构建配置
+ * @param {string} theme - 主题名称
+ * @returns {Array} webpack配置数组
+ */
+function getThemeConfigs(theme) {
+  const configs = [];
+  const { variables, outPath } = getConfig(theme);
+
+  // 克隆并增强各个构建配置
+  const configPairs = [
+    { config: scss, subPath: "/lib" },
+    { config: component, subPath: "/lib" },
+    { config: publish, subPath: "" },
+    { config: publishFull, subPath: "" }
+  ];
+
+  configPairs.forEach(({ config, subPath }) => {
+    const clonedConfig = _.cloneDeep(config);
+    enhanceWebpackConfig(
+      clonedConfig,
+      variables,
+      path.join(outPath, subPath),
+      theme
+    );
+    configs.push(clonedConfig);
+  });
+
+  // 输出构建信息
+  console.log("\n==========================================");
+  console.log(`正在处理主题: ${theme}`);
+  console.log(`变量文件: ${variables}`);
+  console.log(`输出目录: ${outPath}`);
+  console.log("==========================================\n");
+
+  return configs;
+}
+
+/**
+ * 主构建流程
+ */
+async function build() {
+  try {
+    const targetTheme = process.argv[2] || DEFAULT_THEME;
+    const themesToBuild = targetTheme === "all" 
+      ? AVAILABLE_THEMES 
+      : [targetTheme];
+
+    console.log("\n开始构建...");
+    console.log(`待处理主题: ${themesToBuild.join(", ")}\n`);
+
+    const allConfigs = themesToBuild.flatMap(getThemeConfigs);
+    await buildWithWebpack(allConfigs);
+    
+    console.log("\n构建完成! ✨");
+  } catch (error) {
+    console.error("\n构建失败:", error);
+    process.exit(1);
+  }
+}
+
+// 执行构建
+build();
+```

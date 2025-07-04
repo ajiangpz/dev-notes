@@ -1,0 +1,434 @@
+---
+title: webpack 常用插件总结
+date: "2025-07-04"
+tags: ["webpack"]
+summary: "webpack 常用插件总结"
+---
+
+## ReasyUI组件库打包策略
+
+1. webpack.scss.js 打包所有的 scss 文件，多个入口，可按需加载。
+2. webpack.component.js 打包所有的 component 文件，多个入口，可按需加载。
+3. webpack.publish.js 打包基础组件，入口 index.js，提取 css 到一个文件，输出 reasy-ui.js style.css。
+4. webpack.publish.full.js 打包全部组件，入口 index.full.js 包括图表组件，生成 reasy-ui.full.js style.full.js。
+
+#### webpack.scss.js 文件
+
+```js
+
+const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const config = require("./scss.js");
+
+module.exports = {
+  entry: config, // 入口文件路径
+  output: {
+    filename: "[name]/index.js",
+    publicPath: "/"
+  },
+  resolve: {
+    alias: {
+      // 配置目录别名
+      // 在任意目录下require('components/example') 相当于require('项目根目录/src/components/example')
+      vue: "vue/dist/vue.js", //解决 [Vue warn]: You are using the runtime-only build of Vue
+      "@": path.resolve("src")
+    },
+    extensions: [".js", ".vue"] // 引用js和vue文件可以省略后缀名
+  },
+
+  module: {
+    // 配置loader
+    rules: [
+      {
+        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        loader: "url-loader",
+        options: {
+          publicPath: "../../fonts/",
+          outputPath: "../fonts/",
+          name: "v-[name].[ext]?[hash:7]"
+        }
+      }
+    ]
+  },
+  optimization: {
+    minimize: false
+  },
+  devtool: false,
+  plugins: [
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name]/style.css",
+      chunkFilename: "[id].css"
+    })
+  ]
+};
+
+```
+#### scss.js
+
+```js
+module.exports = {
+  base: "./src/scss/base.scss",
+  alert: "./src/scss/components/alert.scss",
+  badge: "./src/scss/components/badge.scss",
+  button: "./src/scss/components/button.scss",
+  checkbox: "./src/scss/components/checkbox.scss",
+  collapse: "./src/scss/components/collapse.scss",
+  datepicker: "./src/scss/components/datepicker.scss",
+  dialog: "./src/scss/components/dialog.scss",
+  dropdown: "./src/scss/components/dropdown.scss",
+  input: "./src/scss/components/input.scss",
+  form: "./src/scss/components/form.scss",
+  layout: "./src/scss/components/row.scss",
+  list: "./src/scss/components/list.scss",
+  loading: "./src/scss/components/loading.scss",
+  message: "./src/scss/components/message.scss",
+  notification: "./src/scss/components/notification.scss",
+  pagination: "./src/scss/components/pagination.scss",
+  popconfirm: "./src/scss/components/popconfirm.scss",
+  popover: "./src/scss/components/popover.scss",
+  popups: "./src/scss/components/popups.scss",
+  radio: "./src/scss/components/radio.scss",
+  scroll: "./src/scss/components/scroll.scss",
+  select: "./src/scss/components/select.scss",
+  slider: "./src/scss/components/slider.scss",
+  steps: "./src/scss/components/steps.scss",
+  switch: "./src/scss/components/switch.scss",
+  tabs: "./src/scss/components/tabs.scss",
+  table: "./src/scss/components/table.scss",
+  timepicker: "./src/scss/components/timepicker.scss",
+  tooltip: "./src/scss/components/tooltip.scss",
+  upload: "./src/scss/components/upload.scss",
+  bar: "./src/scss/components/chart-bar.scss",
+  line: "./src/scss/components/chart-line.scss",
+  percent: "./src/scss/components/chart-percent.scss",
+  pie: "./src/scss/components/chart-pie.scss",
+  progress: "./src/scss/components/chart-percent.scss",
+  colorpicker: "./src/scss/components/colorpicker.scss",
+  edit: "./src/scss/components/edit.scss",
+  qrcode: "./src/scss/components/qrcode.scss",
+  menu: "./src/scss/components/menu.scss"
+};
+
+```
+
+
+#### webpack.conponent.js
+```js
+const path = require("path");
+const { VueLoaderPlugin } = require("vue-loader");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const config = require("./components.js");
+
+module.exports = {
+  noCss: true,
+  //解决打包后出现多个Vue的问题
+  externals: {
+    vue: {
+      root: "Vue",
+      commonjs: "vue",
+      commonjs2: "vue",
+      amd: "vue"
+    }
+  },
+  entry: config, // 入口文件路径
+  output: {
+    chunkFilename: "[name].js?[chunkhash:5]",
+    filename: "[name]/index.js",
+    libraryTarget: "commonjs2",
+    libraryExport: "default"
+  },
+  resolve: {
+    alias: {
+      // 配置目录别名
+      // 在任意目录下require('components/example') 相当于require('项目根目录/src/components/example')
+      vue: "vue/dist/vue.js", //解决 [Vue warn]: You are using the runtime-only build of Vue
+      "@": path.resolve("src")
+    },
+    extensions: [".js", ".vue"] // 引用js和vue文件可以省略后缀名
+  },
+
+  module: {
+    // 配置loader
+    rules: [
+      {
+        test: /\.js$/, //匹配所有.js文件
+        use: [
+          {
+            loader: "babel-loader"
+          }
+        ],
+        exclude: /node_modules/ //排除node_module下的所有文件
+      },
+      {
+        test: /\.vue$/, //匹配所有.js文件
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            js: "babel-loader"
+          },
+          extractCSS: true
+        }
+      }
+    ]
+  },
+  devtool: false,
+  plugins: [new VueLoaderPlugin(), new UglifyJsPlugin()]
+};
+
+```
+
+#### component.js
+```js
+module.exports = {
+  base: "./src/components/base.js",
+  alert: "./src/components/alert/index.js",
+  badge: "./src/components/badge/index.js",
+  button: "./src/components/button/index.js",
+  checkbox: "./src/components/checkbox/index.js",
+  collapse: "./src/components/collapse/index.js",
+  datepicker: "./src/components/datepicker/index.js",
+  dialog: "./src/components/dialog/index.js",
+  dropdown: "./src/components/dropdown/index.js",
+  input: "./src/components/input/index.js",
+  form: "./src/components/form/index.js",
+  layout: "./src/components/layout/index.js",
+  list: "./src/components/list/index.js",
+  loading: "./src/components/loading/index.js",
+  message: "./src/components/message/index.js",
+  notification: "./src/components/notification/index.js",
+  pagination: "./src/components/pagination/index.js",
+  popconfirm: "./src/components/popconfirm/index.js",
+  popover: "./src/components/popover/index.js",
+  popups: "./src/components/popups/index.js",
+  radio: "./src/components/radio/index.js",
+  scroll: "./src/components/scroll/index.js",
+  select: "./src/components/select/index.js",
+  slider: "./src/components/slider/index.js",
+  steps: "./src/components/steps/index.js",
+  switch: "./src/components/switch/index.js",
+  tabs: "./src/components/tabs/index.js",
+  table: "./src/components/table/index.js",
+  timepicker: "./src/components/timepicker/index.js",
+  tooltip: "./src/components/tooltip/index.js",
+  upload: "./src/components/upload/index.js",
+  bar: "./src/components/chart/bar/index.js",
+  line: "./src/components/chart/line/index.js",
+  percent: "./src/components/chart/percent/index.js",
+  pie: "./src/components/chart/pie/index.js",
+  progress: "./src/components/chart/percent/progress.js"
+};
+
+```
+
+上面四个对应每个都是 webpack 配置文件，可以调用 webpack 方法同时打包这些配置，打包产物会各自生成。 
+```js 
+function webpackPromise(config) {
+  return new Promise((resolve, reject) => {
+    webpack(config, (err, stats) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      process.stdout.write(
+        stats.toString({
+          chunks: true, // 使构建过程更静默无输出
+          colors: true // 在控制台展示颜色
+        }) + "\n"
+      );
+
+      resolve();
+    });
+  });
+}
+```
+
+#### webpack.publish.js
+```js
+const path = require("path");
+const { VueLoaderPlugin } = require("vue-loader");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  //解决打包后出现多个Vue的问题
+  externals: {
+    vue: "vue"
+  },
+  entry: {
+    app: ["./src/components/index.js"]
+  }, // 入口文件路径
+  output: {
+    chunkFilename: "[name].js?[chunkhash:5]",
+    filename: "reasy-ui.js",
+    libraryTarget: "commonjs2",
+    libraryExport: "default",
+    library: "reasy-ui"
+  },
+  resolve: {
+    alias: {
+      // 配置目录别名
+      // 在任意目录下require('components/example') 相当于require('项目根目录/src/components/example')
+      vue: "vue/dist/vue.js", //解决 [Vue warn]: You are using the runtime-only build of Vue
+      "@": path.resolve("src")
+    },
+    extensions: [".js", ".vue"] // 引用js和vue文件可以省略后缀名
+  },
+
+  module: {
+    // 配置loader
+    rules: [
+      {
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
+        loader: "url-loader",
+        options: {
+          limit: 1000,
+          publicPath: "/img/",
+          outputPath: "/img/",
+          name: "[name].[ext]?[hash:7]"
+        }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        loader: "url-loader",
+        options: {
+          publicPath: "/fonts/",
+          outputPath: "/fonts/",
+          name: "vui-[name].[ext]?[hash:7]"
+        }
+      },
+
+      {
+        test: /\.js$/, //匹配所有.js文件
+        use: [
+          {
+            loader: "babel-loader"
+          }
+        ],
+        exclude: /node_modules/ //排除node_module下的所有文件
+      },
+      {
+        test: /\.vue$/, //匹配所有.js文件
+
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            js: "babel-loader",
+            scss: "vue-style-loader!css-loader!sass-loader?indentedSyntax"
+          },
+          extractCSS: true
+        }
+      }
+    ]
+  },
+  optimization: {
+    minimize: false
+  },
+  devtool: false,
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "style.css?[contenthash:5]",
+      chunkFilename: "[id].css"
+    }),
+    new VueLoaderPlugin(),
+    new UglifyJsPlugin()
+  ]
+};
+```
+
+#### webpack.publish.full.js
+```js
+const path = require("path");
+const { VueLoaderPlugin } = require("vue-loader");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  //解决打包后出现多个Vue的问题
+  externals: {
+    vue: "vue"
+  },
+  entry: {
+    app: ["./src/components/index-full.js"]
+  }, // 入口文件路径
+  output: {
+    chunkFilename: "[name].js?[chunkhash:5]",
+    filename: "reasy-ui-full.js",
+    libraryTarget: "commonjs2",
+    libraryExport: "default",
+    library: "reasy-ui"
+  },
+  resolve: {
+    alias: {
+      // 配置目录别名
+      // 在任意目录下require('components/example') 相当于require('项目根目录/src/components/example')
+      vue: "vue/dist/vue.js", //解决 [Vue warn]: You are using the runtime-only build of Vue
+      "@": path.resolve("src")
+    },
+    extensions: [".js", ".vue"] // 引用js和vue文件可以省略后缀名
+  },
+
+  module: {
+    // 配置loader
+    rules: [
+      {
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
+        loader: "url-loader",
+        options: {
+          limit: 1000,
+          publicPath: "/img/",
+          outputPath: "/img/",
+          name: "[name].[ext]?[hash:7]"
+        }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg)$/,
+        loader: "url-loader",
+        options: {
+          publicPath: "/fonts/",
+          outputPath: "/fonts/",
+          name: "vui-[name].[ext]?[hash:7]"
+        }
+      },
+
+      {
+        test: /\.js$/, //匹配所有.js文件
+        use: [
+          {
+            loader: "babel-loader"
+          }
+        ],
+        exclude: /node_modules/ //排除node_module下的所有文件
+      },
+      {
+        test: /\.vue$/, //匹配所有.js文件
+
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            js: "babel-loader",
+            scss: "vue-style-loader!css-loader!sass-loader?indentedSyntax"
+          },
+          extractCSS: true
+        }
+      }
+    ]
+  },
+  optimization: {
+    minimize: false
+  },
+  devtool: false,
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "style-full.css?[contenthash:5]",
+      chunkFilename: "[id].css"
+    }),
+    new VueLoaderPlugin(),
+    new UglifyJsPlugin()
+  ]
+};
+
+```
+

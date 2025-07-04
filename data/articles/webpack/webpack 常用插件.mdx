@@ -1,0 +1,263 @@
+---
+title: webpack 常用插件总结
+date: "2025-06-30"
+tags: \["webpack"]
+summary: "webpack 常用插件总结"
+---
+---
+
+## 📦 基础功能类插件
+
+### 1. html-webpack-plugin
+
+根据 HTML 模板，自动引入生成的 JS 文件。
+
+### 2. copy-webpack-plugin
+
+复制静态资源到输出目录（如：语言包 JSON、地图 JSON 等无需编译的文件）。
+
+### 3. clean-webpack-plugin
+
+自动清空构建目录（如 `output.path`），避免旧文件堆积。
+
+---
+
+## 🎨 样式处理相关插件
+
+### 4. extract-text-webpack-plugin（仅 webpack3）
+
+提取 CSS 到单独文件，已被 webpack5 替代方案取代。
+
+### 5. mini-css-extract-plugin
+
+webpack5 中将 CSS 从 JS 中提取为单独文件。
+
+```js
+{
+  test: /\.(scss|css)$/,
+  use: [
+    isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+    'css-loader',
+    'sass-loader'
+  ]
+}
+```
+
+### 6. optimize-css-assets-webpack-plugin（webpack4）
+
+用于压缩 CSS 文件（配合 `UglifyJsPlugin` 使用）。
+
+### 7. css-minimizer-webpack-plugin（webpack5 推荐）
+
+CSS 压缩插件，支持多线程优化构建性能。
+
+```js
+optimization: {
+  minimize: true,
+  minimizer: [
+    `...`,
+    new CssMinimizerPlugin()
+  ]
+}
+```
+
+
+
+---
+
+## 🚀 JS 压缩与性能优化
+
+### 8. uglifyjs-webpack-plugin（webpack4）
+
+用于 JS 压缩，支持缓存与多线程。
+
+### 9. terser-webpack-plugin（webpack5）
+
+替代 `uglifyjs-webpack-plugin`，默认用于 JS 压缩。
+
+```js
+optimization: {
+  minimize: true,
+  minimizer: [new TerserPlugin()]
+}
+```
+
+### 10. webpack.optimize.CommonsChunkPlugin（webpack3）
+
+用于提取公共模块，需手动配置，已被 `splitChunks` 替代。
+
+```js
+new webpack.optimize.CommonsChunkPlugin({
+  name: ['bundle', 'jquery', 'boot'],
+  filename: 'js/libs/[name].js?[chunkhash:5]',
+  minChunks: 2
+})
+```
+
+### 11. webpack.ProvidePlugin
+
+全局自动注入依赖变量（无需 import）。
+
+```js
+new webpack.ProvidePlugin({
+  Promise: 'es6-promise',
+  $: 'jquery',
+  jQuery: 'jquery'
+})
+```
+
+---
+
+## 🧠 构建性能优化
+
+### 12. HappyPack（webpack3）
+
+启用多线程编译（对 loader 加速）。
+
+### 13. thread-loader
+
+webpack4/5 通用多线程 loader（适合 Babel、TS 等）。
+
+### 14. ForkTsCheckerWebpackPlugin
+
+将 TypeScript 类型检查从主线程移出，加快构建速度。
+
+### 15. ESLintWebpackPlugin
+
+自动在构建过程中检查代码规范。
+
+---
+
+## 🧩 Vue 专用插件
+
+### 16. vue-loader
+
+处理 `.vue` 文件，需配合 `VueLoaderPlugin` 使用。
+
+```js
+const { VueLoaderPlugin } = require('vue-loader');
+
+module.exports = {
+  module: {
+    rules: [
+      { test: /\.vue$/, loader: 'vue-loader' },
+      { test: /\.js$/, use: 'babel-loader' },
+      { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] }
+    ]
+  },
+  plugins: [new VueLoaderPlugin()]
+}
+```
+
+---
+
+## 📊 构建体积分析
+
+### 17. webpack-bundle-analyzer
+
+分析构建产物体积，生成可视化报告。
+
+```js
+new BundleAnalyzerPlugin({
+  analyzerMode: 'static',
+  openAnalyzer: false
+})
+```
+
+---
+
+## 🖼 图片优化插件
+
+### 18. image-minimizer-webpack-plugin + imagemin 系列插件
+
+用于压缩图片（JPG、PNG、SVG、GIF）并生成 WebP 格式副本。
+
+```js
+new ImageMinimizerPlugin({
+  minimizer: {
+    implementation: ImageMinimizerPlugin.imageminGenerate,
+    options: {
+      plugins: [
+        ['mozjpeg', { quality: 75 }],
+        ['pngquant', { quality: [0.6, 0.8] }],
+        ['gifsicle', { interlaced: true }],
+        ['svgo']
+      ]
+    }
+  },
+  generator: [
+    {
+      preset: 'webp',
+      implementation: ImageMinimizerPlugin.imageminGenerate,
+      options: {
+        plugins: ['imagemin-webp']
+      },
+      filename: '[path][name].[hash:8].webp'
+    }
+  ]
+})
+```
+
+可配合 `asset/resource` 类型输出优化图片路径和命名。
+
+---
+
+### 19.webpack-spritesmith
+是一个用于将多张小图合并成一张雪碧图（sprite sheet）并自动生成对应 CSS/SASS 的 Webpack 插件，适用于减少 HTTP 请求数、提升前端性能的场景。
+```js 
+const path = require('path');
+const SpritesmithPlugin = require('webpack-spritesmith');
+
+module.exports = {
+  plugins: [
+    new SpritesmithPlugin({
+      src: {
+        cwd: path.resolve(__dirname, 'src/icons'),
+        glob: '*.png'
+      },
+      target: {
+        image: path.resolve(__dirname, 'src/assets/sprite.png'),
+        css: [
+          [path.resolve(__dirname, 'src/styles/_sprite.scss'), {
+            // icon 模板
+            format: 'handlebars_based_template'
+          }]
+        ]
+      },
+      apiOptions: {
+        cssImageRef: '~@/assets/sprite.png' // 给 SCSS 用于 background-image 的路径
+      },
+      customTemplates: {
+        'handlebars_based_template': path.resolve(__dirname, 'sprite.template.handlebars')
+      }
+    })
+  ]
+};
+
+
+//  ICON 模板 handlebar
+{{#each sprites}}
+.icon-{{name}} {
+  display: inline-block;
+  background-image: url({{../spritesheet.image}});
+  background-position: {{px.offset_x}} {{px.offset_y}};
+  width: {{px.width}};
+  height: {{px.height}};
+}
+{{/each}}
+
+
+// 使用
+
+<template>
+  <div class="icon icon-user"></div>
+  <div class="icon icon-setting"></div>
+</template>
+
+<style lang="scss">
+.icon {
+  background-repeat: no-repeat;
+}
+</style>
+
+```

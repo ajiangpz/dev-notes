@@ -74,10 +74,13 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-        "@esbuild/darwin-arm64": "0.25.1",
-     "@esbuild/linux-x64": "0.25.1"
+    "@esbuild/darwin-arm64": "0.25.1",
+    "@esbuild/linux-x64": "0.25.1"
   },
   "overrides": {
-     "@esbuild/darwin-arm64": "0.25.1"
+    "@esbuild/darwin-arm64": "0.25.1"
+  },
+  "volta": {
+    "node": "20.16.0"
   }
 }
