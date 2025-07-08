@@ -164,7 +164,6 @@ export default async function Page(props: {
     const authorResults = allAuthors.find(p => p.slug === author);
     return coreContent(authorResults as Authors);
   });
-  const mainContent = coreContent(post);
   const jsonLd = post.structuredData;
   jsonLd["author"] = authorDetails.map(author => {
     return {
@@ -177,7 +176,7 @@ export default async function Page(props: {
   const relatedPosts = getRelatedPosts(post, sortedCoreContents, 3);
 
   return (
-    <>
+    <>  
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -191,7 +190,7 @@ export default async function Page(props: {
             <div className="mb-8">
               <Link
                 href="/blog/articles"
-                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mb-6 transition-colors"
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mb-6 transition-colors mt-4"
               >
                 <svg
                   className="w-4 h-4 mr-1"
@@ -222,12 +221,7 @@ export default async function Page(props: {
                 {post.title}
               </h1>
 
-              {/* 描述 */}
-              {post.summary && (
-                <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
-                  {post.summary}
-                </p>
-              )}
+
 
               {/* 元数据 */}
               <div className="mt-6 flex flex-wrap items-center text-gray-500 dark:text-gray-400">
@@ -249,7 +243,7 @@ export default async function Page(props: {
                   ))}
                 </div>
 
-                {/* 日期 */}
+                {/* 日期 */}  
                 <time className="mr-6" dateTime={post.date}>
                   {formatDate(post.date)}
                 </time>
@@ -298,12 +292,10 @@ export default async function Page(props: {
             </div>
 
             {/* 文章底部 */}
-            <div className="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8">
-              {/* 分享按钮 */}
-
+            <div className="mt-12  pt-8">
 
               {/* 相关文章 */}
-              {relatedPosts.length > 0 && (
+              {/* {relatedPosts.length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                     相关文章
@@ -316,10 +308,10 @@ export default async function Page(props: {
                         className="group block overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                       >
                         <div className="p-4">
-                          <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 mb-2">
+                          <h4 className="font-medium text-foreground group-hover:text-primary dark:group-hover:text-primary-light line-clamp-2 mb-2">
                             {relatedPost.title}
                           </h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          <p className="text-sm text-muted line-clamp-2">
                             {relatedPost.description || relatedPost.summary}
                           </p>
                         </div>
@@ -327,7 +319,7 @@ export default async function Page(props: {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* 上一篇/下一篇导航 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

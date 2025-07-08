@@ -39,7 +39,7 @@ export const components: MDXComponents = {
   // 优化段落样式
   p: ({ className, ...props }: React.ComponentProps<'p'>) => (
     <p
-      className={`mb-4 text-gray-700 dark:text-gray-300 leading-relaxed ${className || ''}`}
+      className={` text-gray-700 dark:text-gray-300 leading-relaxed ${className || ''}`}
       {...props}
     />
   ),
@@ -97,7 +97,7 @@ export const components: MDXComponents = {
   // 优化代码样式
   code: ({ className, ...props }: React.ComponentProps<'code'>) => (
     <code
-      className={`rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-sm font-mono text-gray-800 dark:text-gray-200 ${className || ''}`}
+      className={`rounded  px-1.5 py-0.5 text-sm font-mono bg-card text-card-foreground ${className || ''}`}
       {...props}
     />
   ),

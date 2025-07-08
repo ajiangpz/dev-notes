@@ -3,7 +3,6 @@ import "pliny/search/algolia.css";
 import "remark-github-blockquote-alert/alert.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Analytics, AnalyticsConfig } from "pliny/analytics";
 import { SearchProvider, SearchConfig } from "pliny/search";
 import Header from "@/components/Header";
 import SectionContainer from "@/components/SectionContainer";
@@ -111,7 +110,6 @@ export default async function RootLayout({
       />
       <body className="bg-white text-black antialiased dark:bg-gray-950 dark:text-white custom-scrollbar">
         <ThemeProviders>
-          <Analytics analyticsConfig={siteMetadata.analytics} />
           {/* 如果显示的是ai页面，则不显示header */}
           {pathname.includes("/projects/ai") ? null : <Header />}
 

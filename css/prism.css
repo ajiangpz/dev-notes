@@ -162,9 +162,10 @@
 
 /* 代码块 */
 pre[class*="language-"] {
-  background-color: #0f172a;
+  background-color: var(--card);
   border-radius: var(--radius);
-  padding: 1.5rem;
+  padding: 1rem;
   overflow: auto;
   margin: 1.5rem 0;
+  border: 1px solid var(--border);
 }

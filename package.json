@@ -49,7 +49,7 @@
     "rehype-slug": "^6.0.0",
     "remark": "^15.0.0",
     "remark-gfm": "^4.0.0",
-    "remark-github-blockquote-alert": "^1.2.1",
+    "remark-github-blockquote-alert": "^1.2.1", 
     "remark-math": "^6.0.0",
     "sql": "^0.78.0",
     "tailwind-merge": "^3.0.2",

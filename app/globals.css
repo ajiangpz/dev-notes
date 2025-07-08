@@ -3,30 +3,88 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark: #1d4ed8;
-  --secondary: #f3f4f6;
-  --accent: #8b5cf6;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+  /* 主要背景和文本颜色 */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222 47% 11%);
+  
+  /* 主色调：使用蓝色作为主要强调色 */
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  /* 次要颜色：用于次要按钮和元素 */
+  --secondary: hsl(220 14% 96%);
+  --secondary-foreground: hsl(222 47% 11%);
+  
+  /* 静音色：用于不需要强调的UI元素 */
+  --muted: hsl(220 14% 96%);
+  --muted-foreground: hsl(215 25% 27%);
+  
+  /* 强调色：用于特殊元素和高亮 */
+  --accent: hsl(262 83% 58%);
+  --accent-foreground: hsl(0 0% 100%);
+
+  /* 破坏性操作颜色 */
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  /* 弹出层颜色 */
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222 47% 11%);
+
+  /* 卡片颜色 */
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222 47% 11%);
+
+  /* 输入框相关 */
+  --input: hsl(220 13% 91%);
+  --ring: hsl(217 91% 60% / 0.3);
+  
+  /* 边框颜色 */
+  --border: hsl(220 13% 91%);
+  
+  /* 圆角 */
   --radius: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --primary: #3b82f6;
-    --primary-light: #60a5fa;
-    --primary-dark: #2563eb;
-    --secondary: #1e293b;
-    --accent: #a78bfa;
-    --muted: #94a3b8;
-    --border: #334155;
-  }
+.dark {
+    /* 深色模式主要背景和文本 */
+    --background: hsl(222 47% 11%);
+    --foreground: hsl(214 100% 97%);
+    
+    /* 深色模式主色调 */
+    --primary: hsl(217 91% 60%);
+    --primary-foreground: hsl(0 0% 100%);
+    
+    /* 深色模式次要颜色 */
+    --secondary: hsl(217 33% 17%);
+    --secondary-foreground: hsl(214 100% 97%);
+    
+    /* 深色模式静音色 */
+    --muted: hsl(217 33% 17%);
+    --muted-foreground: hsl(215 20% 65%);
+    
+    /* 深色模式强调色 */
+    --accent: hsl(262 83% 68%);
+    --accent-foreground: hsl(0 0% 100%);
+
+    /* 深色模式破坏性操作颜色 */
+    --destructive: hsl(0 84% 60%);
+    --destructive-foreground: hsl(0 0% 100%);
+
+    /* 深色模式弹出层颜色 */
+    --popover: hsl(222 47% 11%);
+    --popover-foreground: hsl(214 100% 97%);
+
+    /* 深色模式卡片颜色 */
+    --card: hsl(222 47% 11%);
+    --card-foreground: hsl(214 100% 97%);
+
+    /* 深色模式输入框相关 */
+    --input: hsl(217 33% 17%);
+    --ring: hsl(217 91% 60% / 0.3);
+    
+    /* 深色模式边框 */
+    --border: hsl(217 33% 17%);
 }
 
 body {
@@ -43,8 +101,6 @@ body {
   }
 }
 
-/* 在现有CSS文件末尾添加 */
-
 /* 自定义滚动条样式 */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -55,21 +111,21 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
+  background-color: hsl(220 9% 65% / 0.5);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(156, 163, 175, 0.7);
+  background-color: hsl(220 9% 65% / 0.7);
 }
 
 /* 深色模式滚动条 */
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.5);
+  background-color: hsl(215 14% 34% / 0.5);
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(75, 85, 99, 0.7);
+  background-color: hsl(215 14% 34% / 0.7);
 }
 
 /* 平滑滚动 */
@@ -79,7 +135,7 @@ html {
 
 /* 固定header下的阴影效果 */
 .header-shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
 }
 
 /* 当页面滚动时添加的类 */
@@ -95,13 +151,13 @@ html {
 /* 适配不同设备的header高度 */
 @media (max-width: 640px) {
   .pt-header {
-    padding-top: 60px; /* 移动设备上的header高度 */
+    padding-top: 60px;
   }
 }
 
 @media (min-width: 641px) {
   .pt-header {
-    padding-top: 72px; /* 桌面设备上的header高度 */
+    padding-top: 72px;
   }
 }
 

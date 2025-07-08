@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { allBlogs } from "contentlayer/generated";
-import dynamic from "next/dynamic";
 
 import TrendingTech from "@/components/TrendingTech";
 import LearningPath from "@/components/LearningPath";
@@ -21,11 +20,10 @@ export default function Home() {
 
   return (
     <>
-      {/* Three.js 英雄区 */}
 
       {/* 最新文章 */}
       <section className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
+        <h2 className="text-3xl font-bold mb-8 mt-8 text-gray-900 dark:text-white">
           最新文章
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -64,31 +62,13 @@ export default function Home() {
                         day: "numeric",
                       })}
                     </time>
-                    {/* <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                      <span>阅读量: {post.views || "5分钟"}</span>
-                    </div> */}
+
                   </div>
                 </div>
               </Link>
             </div>
           ))}
         </div>
-      </section>
-
-      {/* 学习路径 */}
-      <section className="mb-16" id="learning-paths">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-          学习路径
-        </h2>
-        <LearningPath />
-      </section>
-
-      {/* 技术趋势 */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-          技术雷达
-        </h2>
-        <TrendingTech />
       </section>
     </>
   );
