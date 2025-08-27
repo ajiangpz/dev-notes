@@ -1,0 +1,179 @@
+---
+title: lighthouse 性能优化
+date: "2025-08-26"
+tags: ["performance", "lighthouse"]
+draft: false
+summary:
+---
+
+## 代码覆盖率 Coverage
+
+### 如何使用 Coverage 工具
+
+1. 在 DevTools 处于焦点的情况下，按 Command+Shift+P（Mac）或 Control+Shift+P（Windows、Linux、ChromeOS）以打开“命令”菜单。
+2. 开始输入 coverage。
+3. 选择显示覆盖率。系统随即会显示“Coverage”（覆盖率）标签页。
+4. 点击 开始检测覆盖率，并重新加载网页。 Reload（重新加载）。 网页会重新加载，Coverage（覆盖率）标签页会简要显示浏览器加载的每个文件中使用的 CSS（和 JavaScript）数量。
+
+### 如何优化代码覆盖率
+1. 减少全局样式
+   - 只在需要的页面引入对应的样式文件
+   - 按模块拆分样式文件
+2. 减少全局脚本
+   - 只在需要的页面引入对应的脚本文件
+   - 按模块拆分脚本文件
+3. 按需加载组件库
+   - 只引入需要的组件
+   - 使用 babel-plugin-import 等工具按需加载
+4. tree-shaking pure-css
+---
+### TTFB
+优化 TTFB: https://web.dev/ttfb/
+### 什么是 TTFB
+TTFB（Time to First Byte，首字节时间）
+### 如何计算 TTFB
+```JavaScript
+new PerformanceObserver((entryList) => {
+  const [pageNav] = entryList.getEntriesByType('navigation');
+  console.log(`TTFB: ${pageNav.responseStart}`);
+}).observe({
+  type: 'navigation',
+  buffered: true
+});
+```
+```JavaScript
+new PerformanceObserver((entryList) => {
+  const entries = entryList.getEntries();
+
+  for (const entry of entries) {
+    // Some resources may have a responseStart value of 0, due
+    // to the resource being cached, or a cross-origin resource
+    // being served without a Timing-Allow-Origin header set.
+    if (entry.responseStart > 0) {
+      console.log(`TTFB: ${entry.responseStart}`, entry.name);
+    }
+  }
+}).observe({
+  type: 'resource',
+  buffered: true
+});
+```
+### 优化 TTFB
+优化TTFB https://web.dev/articles/optimize-ttfb?hl=zh-cn
+1. 使用性能更好的服务器
+2. 使用 CDN
+3. 使用缓存
+4. 减少重定向
+5. 优化数据库查询
+6. 使用 HTTP/2 或 HTTP/3
+7. 压缩传输内容
+8. 优化应用代码
+
+
+---
+## FCP
+优化 First Contentful Paint: https://web.dev/articles/optimize-fcp?hl=zh-cn
+### 什么是 FCP
+FCP（First Contentful Paint，首次内容绘制）
+### 如何计算 FCP
+```JavaScript
+new PerformanceObserver((entryList) => {
+  for (const entry of entryList.getEntriesByName('first-contentful-paint')) {
+    console.log('FCP candidate:', entry.startTime, entry);
+  }
+}).observe({type: 'paint', buffered: true});
+```
+
+---
+### 优化 FCP
+1. 移除阻塞渲染的资源
+2. 缩减 CSS 大小
+3. 移除未使用的 CSS
+4. 移除未使用的 JavaScript
+5. 预先连接到必需的源
+6. 缩短服务器响应时间 (TTFB)
+7. 避免多次网页重定向
+8. 预加载密钥请求
+9. 避免网络载荷过大
+10. 采用高效的缓存策略提供静态资源
+11. 避免 DOM 规模过大
+12. 最大限度地缩短关键请求深度
+13. 确保文本在网页字体加载期间保持可见状态
+14. 请保持较低的请求数量和较小的传输大小
+
+
+---
+
+
+
+## LCP
+优化 Largest Contentful Paint: https://web.dev/articles/optimize-lcp?hl=zh-cn
+### 什么是 LCP
+LCP（Largest Contentful Paint，最大内容绘制）
+
+### 如何计算 LCP
+```JavaScript
+new PerformanceObserver((entryList)=>{
+   // entryList 里面包含了所有的 LCP 事件 
+   // 每个 entry 代表一个 LCP 事件
+   // 因为 largest-content 会随着页面的加载而变化
+   // 所以会有多个 LCP 事件
+   for(const entry of entryList.getEntries()){
+      console.log('LCP candidate:',entry.startTime,entry);
+   }
+}).observe({type:'largest-contentful-paint',buffered:true}); 
+```
+
+### 优化LCP
+1. 使LCP资源更早加载
+2. 使LCP资源加载更快
+3. 使LCP资源渲染更快
+4. 使HTML的首字节更快到达
+
+---
+## INP
+优化 Interaction to Next Paint: https://web.dev/articles/optimize-inp?hl=zh-cn#minimize_presentation_delay
+
+### 什么是 INP
+INP（Interaction to Next Paint，交互到下一次绘制）
+
+### 如何计算 INP
+```JavaScript
+new PerformanceObserver((entryList)=>{
+   // entryList 里面包含了所有的交互事件
+   for(const entry of entryList.getEntries()){
+      console.log('Event:',entry.name,'Duration:',entry.processingStart-entry.startTime,entry);
+   }
+}).observe({type:'event',buffered:true}); 
+```
+
+### 优化 INP
+1. 减少主线程任务 
+2. 优化事件回调： 多个任务时，在requestAnimationFrame中执行settimeout
+3. 减少渲染事件：降低dom复杂度，减少css复杂度 
+4. 避免使用JavaScript 修改布局和重排属性
+
+
+## CLS 
+优化 Cumulative Layout Shift: https://web.dev/articles/cls?hl=zh_cn
+### 什么是 CLS
+CLS（Cumulative Layout Shift，累计布局偏移）
+
+### 如何计算 CLS
+```JavaScript  
+new PerformanceObserver((entryList) => {
+  for (const entry of entryList.getEntries()) {
+    console.log('Layout shift:', entry);
+  }
+}).observe({type: 'layout-shift', buffered: true});
+
+```
+
+### 优化 CLS
+优化 Cumulative Layout Shift：https://web.dev/articles/optimize-cls?hl=zh-cn#web-fonts
+1. 为图片和视频元素指定宽高属性
+2. 动画使用 transform 属性 opacity 使用其他属性比如 left top 会导致重排
+3. 避免在字体加载时发生布局偏移
+ - 内嵌style 引用字体，使字体更早加载
+ - preload 字体，preconnect 字体域名
+ - 使用系统字体

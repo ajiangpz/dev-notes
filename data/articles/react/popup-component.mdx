@@ -1,0 +1,327 @@
+---
+title: 使用 react 实现 popup 组件
+date: "2025-08-18"
+tags: ["react"]
+---
+
+## 这个组件是如何实现的
+
+这是一个基础能力组件，核心的触发节点（trigger）和 浮层显示（overlay），实现分为以下几个步骤
+
+## typescript 类型定义
+
+1. Popup组件props定义
+2. Popup暴露给父组件的方法
+3. useTrigger hook 的参数类型定义
+
+```ts
+export interface UseTriggerPros {
+   // reactnode或者函数
+   content:React.ReactNode | ()=> React.ReactNode;
+   // 触发方式
+   trigger: "click" | "hover" | "focus" | "mousedown" | "context-menu" | "touch";
+   // 触发节点
+   triggerRef: React.RefObject<HTMLElement>;
+   // 浮层显示状态
+   visible: boolean;
+   // 浮层显示状态变化的回调
+   onVisibleChange: (visible: boolean, e?: React.SyntheticEvent) => void,
+   // 浮层显示的延迟时间
+   delay?: number|[number, number];
+}
+```
+
+## useTrigger hook 封装触发浮层显示的逻辑
+
+1. 使用 lodash-es 的 on 和 off 方法绑定 document 全局点击事件, 处理点击TriggerRef 或 popupRef 的逻辑
+
+```ts
+import { on, off } from "lodash-es";
+import { useEffect, useRef } from "react";
+useEffect(() => {
+  const handleClick = (e: MouseEvent) => {
+    // 处理点击事件 判断是否点击的是 triggerRef 或者 popupRef
+    const target = e.target as HTMLElement;
+    if (getDomRef(triggerRef)?.contains(target) || isPopupMouseDown.current) {
+      return;
+    }
+    onVisibleChange(false, e);
+  };
+  // pc
+  on(document, "mousedown", handleClick);
+  // 移动端
+  on(document, "touchend", handleClick);
+  return () => {
+    off(document, "click", handleClick);
+  };
+}, [visible, onVisibleChange]);
+```
+
+2. 生成触发节点的 props, 包括 ref 和 事件处理函数
+   处理鼠标在trigger和popup之间的交互逻辑, 比如在二者之前移入移出时, 浮层需要保持显示状态
+
+```ts
+const getTiggerProps = (triggerNode) => {
+  const triggerProps: any = {
+    onMouseDown: (e: MouseEvent) => {
+      if (trigger === "mousedown") {
+        callFuncWithDelay({
+          delay: visible ? exitDelay : appearDelay,
+          callback: () => onVisibleChange(!visible, { ...e, nativeEvent: e }),
+        });
+      }
+    },
+    onMouseEnter: (e: MouseEvent) => {
+      if (trigger === "hover") {
+        leaveFlag.current = false;
+        callFuncWithDelay({
+          delay: appearDelay,
+          callback: () => onVisibleChange(true, { ...e, nativeEvent: e }),
+        });
+      }
+    },
+    onTouchStart,
+    onTouchEnd,
+    onContextMenu,
+  };
+};
+```
+
+3. 生成浮层节点的 props, 包括 ref 和 事件处理函数
+
+```ts
+const getPopupProps = () => ({
+  onMouseEnter: (e: MouseEvent) => {
+    if (trigger === "hover" && !leaveFlag.current) {
+      clearTimeout(visibleTimer.current);
+      onVisibleChange(true, { e, trigger: "trigger-element-hover" });
+    }
+  },
+  onMouseLeave,
+  onTou,
+});
+```
+
+## 使用 usePopper hook 封装触发浮层显示的逻辑
+
+1. usePopper hook 接收 triggerRef 和 popupRef, 以及其他 popper.js 配置参数, 返回浮层位置和样式 styles attributes
+   应用到浮层节点上
+
+```ts
+// popperRef 表示 popper 实例
+popperRef.current = usePopper(getRefDom(triggerRef), popupElement as any, {
+  placement: popperPlacement,
+  ...restPopperOptions,
+});
+const { styles, attributes } = popperRef.current;
+```
+
+2. popperRef.current 对象包含
+   - styles: 包含浮层的样式信息
+   - attributes: 包含浮层的属性信息
+   - update: 更新浮层位置的方法
+   - forceUpdate: 强制更新浮层位置的方法
+
+```ts
+return {
+  state: popperInstanceRef.current
+    ? popperInstanceRef.current.state
+    : undefined,
+  styles: state.styles,
+  attributes: state.attributes,
+  update: popperInstanceRef.current ? popperInstanceRef.current.update : null,
+  forceUpdate: popperInstanceRef.current
+    ? popperInstanceRef.current.forceUpdate
+    : null,
+};
+```
+
+3. useMutationObservable hook 监听triggerRef 的变化, 当 triggerRef 变化时, 调用 popperRef.current.update() 方法更新浮层位置
+
+```ts
+useMutationObserver(getRefDom(triggerRef), () => {
+  const isDisplayNone =
+    getCssVarsValue("display", getRefDom(triggerRef)) === "none";
+  if (visible && !isDisplayNone) {
+    clearTimeout(updateTimeRef.current as any);
+    updateTimeRef.current = setTimeout(
+      () => popperRef.current?.update?.(),
+      0
+    ) as any;
+  }
+});
+```
+
+4. 监听窗口大小变化，当窗口大小变化时, 调用 popperRef.current.update() 方法更新浮层位置
+
+```ts
+useEffect(() => {
+  if (visible) {
+    requestAnimationFrame(() => popperRef.current?.update?.());
+  }
+}, [visible, content, windowHeight, windowWidth]);
+```
+
+## 渲染trigger节点和浮层
+
+1. 使用 Portal 组件将浮层渲染到指定的 DOM 节点上, 这样可以避免浮层被其他元素遮挡
+
+```tsx
+<Portal triggerNode={getRefDom(triggerRef)} attach="body" ref={portalRef}>
+  <div
+    ref={popupRef}
+    className={classNames("popup", className)}
+    style={{ ...styles.popper, ...style }}
+    {...attributes.popper}
+  >
+    {typeof content === "function" ? content() : content}
+  </div>
+</Portal>
+```
+
+2. trigger节点使用 cloneElement 克隆传入的 trigger 节点, 并添加触发事件和 ref
+
+```tsx
+const triggerNode = isFunction(children)
+  ? getTriggerNode(children({ visible }))
+  : getTriggerNode(children);
+
+function getTriggerNode(children: React.ReactNode) {
+  const triggerNode =
+    isValidElement(children) && !isFragment(children)
+      ? children
+      : React.createElement("span", { children });
+
+  return React.cloneElement(triggerNode, getTriggerProps(triggerNode));
+}
+```
+
+3. 浮层节点添加 popper.js 计算出来的样式和属性, 以及 ref，使用 cssTransition 组件实现浮层的显示和隐藏动画
+
+```tsx
+<CSSTransition
+  appear
+  in={visible}
+  timeout={DEFAULT_TRANSITION_TIMEOUT}
+  nodeRef={portalRef}
+  unmountOnExit={destroyOnClose}
+  onEnter={handleEnter}
+  onExited={handleExited}
+  classNames="r-portal"
+>
+  <Portal triggerNode={getRefDom(triggerRef)} attach="body" ref={portalRef}>
+    <CSSTransition
+      appear
+      timeout={0}
+      in={visible}
+      nodeRef={popupRef}
+      classNames="r-popup"
+    >
+      <div
+        ref={(node) => {
+          if (node) {
+            popupRef.current = node as any;
+            setPopupElement(node as any);
+          }
+        }}
+        style={{
+          ...(styles as any).popper,
+          zIndex,
+          ...getOverlayStyle(overlayStyle),
+        }}
+        className={classNames(`r-popup`, overlayClassName, "")}
+        {...attributes.popper}
+        {...getPopupProps()}
+      >
+        <div
+          ref={contentRef}
+          className={classNames(
+            `r-popup__content`,
+            "bg-background text-foreground rounded-md px-2 py-1",
+            {
+              [`r-popup__content--arrow`]: showArrow,
+            },
+            overlayInnerClassName
+          )}
+          style={getOverlayStyle(overlayInnerStyle)}
+          onScroll={handleScroll}
+        >
+          {content as any}
+          {showArrow && (
+            <div
+              style={(styles as any).arrow}
+              className={`r-popup__arrow`}
+              {...(hasArrowModifier && { "data-popper-arrow": "" })}
+            />
+          )}
+        </div>
+      </div>
+    </CSSTransition>
+  </Portal>
+</CSSTransition>
+```
+
+4. 使用 useImperativeHandle 暴露给父组件的方法
+
+```tsx
+useImperativeHandle(ref, () => ({
+  getPopper: () => popperRef.current as any,
+  getPopupElement: () => popupRef.current as any,
+  getPortalElement: () => portalRef.current as any,
+  getPopupContentElement: () => contentRef.current as any,
+  setVisible: (visible: boolean) =>
+    onVisibleChange(visible, { trigger: "document" }),
+}));
+```
+
+5. 使用 React.Fragment 包裹 trigger 和浮层节点, 这样可以避免多余的 DOM 节点
+
+```tsx
+<React.Fragment>
+  {triggerNode}
+  {overlay}
+</React.Fragment>
+```
+
+6. 动画效果和箭头
+
+```scss
+.r-popup__content {
+  position: relative;
+  max-width: 250px;
+  word-break: break-all;
+  box-shadow:
+    var(--shadow-2), var(--shadow-insert-bottom), var(--shadow-insert-right),
+    var(--shadow-insert-left), var(--shadow-insert-top);
+  .r-popup__arrow {
+    position: absolute;
+    z-index: 1;
+    &::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background-color: var(--background);
+      transform: rotate(45deg);
+      display: block;
+    }
+  }
+}
+
+.r-popup[data-popper-placement^="top"] .r-popup__content {
+  margin-bottom: 16px;
+  .r-popup__arrow {
+    &::before {
+      box-shadow: var(--shadow-insert-left), var(--shadow-insert-bottom);
+      border-top-left-radius: 100%;
+    }
+  }
+}
+
+.r-popup[data-popper-placement="top"] .r-popup__arrow {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.r-popup[data-popper-placement="top-start"] .r-popup__arrow {
+  left: calc(var(--pop-arrow-width) * 2);
+}
+```

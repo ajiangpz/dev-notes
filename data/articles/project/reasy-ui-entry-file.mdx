@@ -1,0 +1,62 @@
+---
+title: 使用 husky 使用指南
+date: "2025-07-10"
+tags: ["husky","project"]
+summary: "使用 husky 使用指南"
+---
+
+## 安装 husky
+
+```bash
+npm install husky --save-dev
+```
+
+## 配置 husky
+执行以下命令，会生成 .husky 文件夹
+
+```bash
+npx husky install
+```
+
+## 配置 husky 的钩子
+执行以下命令，会在 .husky 文件夹下生成 pre-commit 文件
+
+```bash
+npx husky add .husky/pre-commit
+```
+
+## 配置 pre-commit 文件
+
+在 pre-commit 文件中添加以下代码，在提交代码时，会检查 git 用户名是否为 `Jerry`，如果不是，则不允许提交。
+```bash
+git_user=$(git config user.name)
+
+echo "当前 Git 用户名: $git_user"
+
+if [ "$git_user" != "Jerry" ]; then
+  echo "❌ 提交失败：Git 用户名不是 'Jerry'，请配置正确用户名后重试。"
+  exit 1
+fi
+
+echo "✅ Git 用户名校验通过，允许提交。"
+```
+
+## 配置 commit-msg
+```bash
+npm i commitlint 
+```
+
+## 增加 commitlint.config.js
+```js
+export default { extends: ['@commitlint/config-conventional'] };
+```
+
+## 效果
+
+在 git commit 前会检查用户名，如果不通过命令行报错，退出提交
+在 git commit 后检查 commit-msg ，如果不符合规范则会报错，退出提交
+
+
+
+
+
