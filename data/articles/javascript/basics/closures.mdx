@@ -10,6 +10,147 @@ summary:
 
 ## 基本问题
 
-### 1. 什么是闭包？
+### 什么是闭包？
 
-**答案**：闭包是指一个函数能够访问并记住其词法作用域，即使该函数在其词法作用域之外执行。简单来说，闭包是一个函数及其捆绑的周边环境状态的引用的组合。 
+**答案**：闭包是指一个函数能够访问并记住其词法作用域，即使该函数在其词法作用域之外执行。
+简单来说，闭包是一个函数及其捆绑的周边环境状态的引用的组合。 
+
+### 循环中的闭包与作用域
+```JavaScript
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log(i); // 输出什么？
+  }, 100);
+}
+```
+如果将 var 改为 let，输出会如何变化？请解释原因。
+
+**答案**：var : 333  let : 0 1 2
+
+### 原型链的多层继承与属性覆盖
+```JavaScript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  getX() {
+    return this.x;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super(); // 调用父类的constructor
+    this.x = 2;
+  }
+  getX() {
+    return super.getX() + 1; // 这里super正确指向A类的getX方法
+  }
+}
+
+class C extends B {
+  constructor() {
+    super();
+    this.x = 3;
+  }
+}
+
+const c = new C();
+console.log(c.getX()); // 输出4
+console.log(c instanceof A); // 输出true
+```
+**知识点**：
+1. super 在子类的构造函数调用，指向父类的构造函数。
+2. super 在子类的方法中调用，指向父类的原型。
+3. 以上两种情况，super中的 this 都指向调用它的子类。
+**流程**：
+1. 调用 c.getX() 方法。
+2. 查找 C 类的原型链，找到 getX 方法。
+3. 执行 getX 方法，内部调用 super.getX()。
+4. 查找 B 类的原型链，找到 getX 方法。
+5. 执行 getX 方法，内部调用 super.getX()。
+6. 查找 A 类的原型链，找到 getX 方法。
+7. 执行 getX 方法，返回 this.x 的值。
+8. 最后返回 4。
+
+
+### 动态原型链与 __proto__ 的陷阱
+```JavaScript
+const obj = {};
+obj.__proto__ = { a: 1 };
+Object.setPrototypeOf(obj, { b: 2 });
+
+const proto1 = Object.getPrototypeOf(obj);
+const proto2 = obj.__proto__;
+
+console.log(proto1 === proto2); // 输出？
+console.log(obj.a, obj.b); // 输出？
+```
+
+**知识点**：
+1. __proto__ 是对象的一个属性，它指向对象的原型对象。
+2. Object.setPrototypeOf() 方法可以改变一个对象的原型。
+3. Object.getPrototypeOf() 方法可以获取一个对象的原型，它返回对象的内部 [[Prototype]] 属性的值，即__proto__。
+4. 以上方法都可以动态改变对象的原型，但是不推荐使用，因为它会改变对象的内部状态，影响性能。
+5. 推荐使用 Object.create() 方法创建一个新对象，指定它的原型。
+6. 推荐使用 class 语法创建类，因为它内部使用了 Object.create() 方法。
+
+**流程**
+1. `const obj = {}; => obj.__proto__ -> Object.prototype`
+2. `obj.__proto__ = { a: 1 } => obj.__proto__ -> { a: 1 } -> Object.prototype`
+3. `Object.setPrototypeOf(obj, { b: 2 }) => obj.__proto__ -> { b: 2 } -> Object.prototype`
+4. `console.log(obj.a, obj.b); // 输出 true `
+
+### 闭包中的变量共享问题
+```JavaScript
+function createFuncs() {
+  const funcs = [];
+  for (let i = 0; i < 3; i++) {
+    funcs.push(function() {
+      console.log(i);
+    });
+  }
+  return funcs;
+}
+
+const funcs = createFuncs();
+funcs[0](); // 输出？
+```
+**流程**：
+1. let 执行时会创建新的块级作用域和新的i绑定，因此每次循环 `push(function(){console.log(i)})` 捕获的i都是那次循环独立变量。
+2. var 执行时不会创建新的块级作用域，所有的闭包共享同一个 i。
+3. 闭包执行时，会先查找自己的作用域链，没有找到就会去原型链上查找。
+4. let 查找块级作用域，输出 0。
+5. var 查找更上级的作用域，输入 3。
+
+
+### 原型链中的 constructor 修正与继承
+
+```JavaScript
+function Parent() { this.val = 1; }
+Parent.prototype.getVal = function() { return this.val; };
+
+function Child() {
+  Parent.call(this);
+  this.val += 2;
+}
+
+// 错误实现：直接赋值 prototype
+Child.prototype = Parent.prototype;
+
+const child = new Child();
+console.log(child.getVal()); // 输出？
+console.log(child instanceof Parent); // 输出？
+console.log(Parent.prototype.constructor === Child); // 输出？（原因为何？）
+```
+**分析**：
+1. `Child.prototype = Parent.prototype;` 错误实现，直接赋值 prototype，导致 Child 类的原型链指向 Parent 类的原型链，而不是 Parent 类的实例。
+2. `Child.prototype = Object.create(Parent.prototype);` 正确实现，使用 Object.create() 方法创建一个新对象，指定它的原型为 Parent 类的原型，而不是 Parent 类的实例。
+3. `Child.prototype.constructor = Child;` 修正 constructor 指向，指向 Child 类的构造函数。
+4. `console.log(child.getVal()); // 输出 3`
+5. `console.log(child instanceof Parent); // 输出 true`
+6. `console.log(Parent.prototype.constructor === Child); // 输出 false`
+
+
+
+
