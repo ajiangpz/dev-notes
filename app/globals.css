@@ -3,94 +3,50 @@
 @tailwind utilities;
 
 :root {
-  /* 主要背景和文本颜色 */
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(222 47% 11%);
-  
-  /* 主色调：使用蓝色作为主要强调色 */
-  --primary: hsl(217 91% 60%);
-  --primary-foreground: hsl(0 0% 100%);
-  
-  /* 次要颜色：用于次要按钮和元素 */
-  --secondary: hsl(220 14% 96%);
-  --secondary-foreground: hsl(222 47% 11%);
-  
-  /* 静音色：用于不需要强调的UI元素 */
-  --muted: hsl(220 14% 96%);
-  --muted-foreground: hsl(215 25% 27%);
-  
-  /* 强调色：用于特殊元素和高亮 */
-  --accent: hsl(262 83% 58%);
-  --accent-foreground: hsl(0 0% 100%);
-
-  /* 破坏性操作颜色 */
-  --destructive: hsl(0 84% 60%);
-  --destructive-foreground: hsl(0 0% 100%);
-
-  /* 弹出层颜色 */
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222 47% 11%);
-
-  /* 卡片颜色 */
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(222 47% 11%);
-
-  /* 输入框相关 */
-  --input: hsl(220 13% 91%);
-  --ring: hsl(217 91% 60% / 0.3);
-  
-  /* 边框颜色 */
-  --border: hsl(220 13% 91%);
-  
-  /* 圆角 */
+  --background: #f9fafb;
+  --foreground: #1a1a1a;
+  --primary: #2563eb;
+  --primary-light: #60a5fa;
+  --primary-dark: #1e40af;
+  --secondary: #f3f4f6;
+  --accent: #eab308;
+  --muted: #6b7280;
+  --border: #e5e7eb;
   --radius: 0.5rem;
+  --error: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e42;
+  --code: #f0f0f0;
+  --code-foreground: #1e293b;
 }
 
 .dark {
-    /* 深色模式主要背景和文本 */
-    --background: hsl(222 47% 11%);
-    --foreground: hsl(214 100% 97%);
-    
-    /* 深色模式主色调 */
-    --primary: hsl(217 91% 60%);
-    --primary-foreground: hsl(0 0% 100%);
-    
-    /* 深色模式次要颜色 */
-    --secondary: hsl(217 33% 17%);
-    --secondary-foreground: hsl(214 100% 97%);
-    
-    /* 深色模式静音色 */
-    --muted: hsl(217 33% 17%);
-    --muted-foreground: hsl(215 20% 65%);
-    
-    /* 深色模式强调色 */
-    --accent: hsl(262 83% 68%);
-    --accent-foreground: hsl(0 0% 100%);
-
-    /* 深色模式破坏性操作颜色 */
-    --destructive: hsl(0 84% 60%);
-    --destructive-foreground: hsl(0 0% 100%);
-
-    /* 深色模式弹出层颜色 */
-    --popover: hsl(222 47% 11%);
-    --popover-foreground: hsl(214 100% 97%);
-
-    /* 深色模式卡片颜色 */
-    --card: hsl(222 47% 11%);
-    --card-foreground: hsl(214 100% 97%);
-
-    /* 深色模式输入框相关 */
-    --input: hsl(217 33% 17%);
-    --ring: hsl(217 91% 60% / 0.3);
-    
-    /* 深色模式边框 */
-    --border: hsl(217 33% 17%);
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --primary: #60a5fa;
+  --primary-light: #93c5fd;
+  --primary-dark: #2563eb;
+  --secondary: #1e293b;
+  --accent: #facc15;
+  --muted: #94a3b8;
+  --border: #334155;
+  --radius: 0.5rem;
+  --error: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --code: #1e293b;
+  --code-foreground: #f0f0f0;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   line-height: 1.6;
   letter-spacing: -0.01em;
 }
@@ -135,7 +91,9 @@ html {
 
 /* 固定header下的阴影效果 */
 .header-shadow {
-  box-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 /* 当页面滚动时添加的类 */
@@ -160,5 +118,3 @@ html {
     padding-top: 72px;
   }
 }
-
-

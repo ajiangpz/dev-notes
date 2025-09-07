@@ -164,7 +164,6 @@
 pre[class*="language-"] {
   background-color: var(--card);
   border-radius: var(--radius);
-  padding: 1rem;
   overflow: auto;
   margin: 1.5rem 0;
   border: 1px solid var(--border);

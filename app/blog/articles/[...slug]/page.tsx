@@ -5,7 +5,7 @@ import { MDXLayoutRenderer } from "pliny/mdx-components";
 import {
   sortPosts,
   coreContent,
-  allCoreContent
+  allCoreContent,
 } from "pliny/utils/contentlayer";
 import type { Authors, Blog } from "contentlayer/generated";
 import { allBlogs, allAuthors } from "contentlayer/generated";
@@ -22,10 +22,10 @@ export async function generateMetadata(props: {
 }): Promise<Metadata | undefined> {
   const params = await props.params;
   const slug = decodeURI(params.slug.join("/"));
-  const post = allBlogs.find(p => p.slug === slug);
+  const post = allBlogs.find((p) => p.slug === slug);
   const authorList = post?.authors || ["default"];
-  const authorDetails = authorList.map(author => {
-    const authorResults = allAuthors.find(p => p.slug === author);
+  const authorDetails = authorList.map((author) => {
+    const authorResults = allAuthors.find((p) => p.slug === author);
     return coreContent(authorResults as Authors);
   });
   if (!post) {
@@ -34,14 +34,14 @@ export async function generateMetadata(props: {
 
   const publishedAt = new Date(post.date).toISOString();
   const modifiedAt = new Date(post.lastmod || post.date).toISOString();
-  const authors = authorDetails.map(author => author.name);
+  const authors = authorDetails.map((author) => author.name);
   let imageList = [siteMetadata.socialBanner];
   if (post.images) {
     imageList = typeof post.images === "string" ? [post.images] : post.images;
   }
-  const ogImages = imageList.map(img => {
+  const ogImages = imageList.map((img) => {
     return {
-      url: img.includes("http") ? img : siteMetadata.siteUrl + img
+      url: img.includes("http") ? img : siteMetadata.siteUrl + img,
     };
   });
 
@@ -58,20 +58,20 @@ export async function generateMetadata(props: {
       modifiedTime: modifiedAt,
       url: "./",
       images: ogImages,
-      authors: authors.length > 0 ? authors : [siteMetadata.author]
+      authors: authors.length > 0 ? authors : [siteMetadata.author],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.summary,
-      images: imageList
-    }
+      images: imageList,
+    },
   };
 }
 
 export const generateStaticParams = async () => {
-  return allBlogs.map(p => ({
-    slug: p.slug.split("/").map(name => decodeURI(name))
+  return allBlogs.map((p) => ({
+    slug: p.slug.split("/").map((name) => decodeURI(name)),
   }));
 };
 
@@ -79,7 +79,7 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
-    day: "numeric"
+    day: "numeric",
   });
 }
 
@@ -100,14 +100,14 @@ function getRelatedPosts(currentPost: Blog, allPosts: any[], limit = 3) {
   // 如果没有标签，返回最新的文章
   if (!currentPost.tags || currentPost.tags.length === 0) {
     return allPosts
-      .filter(post => post.slug !== currentPost.slug)
+      .filter((post) => post.slug !== currentPost.slug)
       .slice(0, limit);
   }
 
   // 计算文章相关性得分
   const relatedPosts = allPosts
-    .filter(post => post.slug !== currentPost.slug) // 排除当前文章
-    .map(post => {
+    .filter((post) => post.slug !== currentPost.slug) // 排除当前文章
+    .map((post) => {
       // 如果文章没有标签，相关性为0
       if (!post.tags) return { ...post, score: 0 };
 
@@ -118,21 +118,21 @@ function getRelatedPosts(currentPost: Blog, allPosts: any[], limit = 3) {
 
       return {
         ...post,
-        score: commonTags
+        score: commonTags,
       };
     })
-    .filter(post => post.score > 0) // 只保留有共同标签的文章
+    .filter((post) => post.score > 0) // 只保留有共同标签的文章
     .sort((a, b) => b.score - a.score) // 按相关性排序
     .slice(0, limit); // 限制数量
 
   // 如果相关文章不足，补充最新文章
   if (relatedPosts.length < limit) {
     const neededPosts = limit - relatedPosts.length;
-    const existingSlugs = relatedPosts.map(p => p.slug);
+    const existingSlugs = relatedPosts.map((p) => p.slug);
 
     const additionalPosts = allPosts
       .filter(
-        post =>
+        (post) =>
           post.slug !== currentPost.slug && !existingSlugs.includes(post.slug)
       )
       .slice(0, neededPosts);
@@ -158,17 +158,17 @@ export default async function Page(props: {
 
   const prev = sortedCoreContents[postIndex + 1];
   const next = sortedCoreContents[postIndex - 1];
-  const post = allBlogs.find(p => p.slug === slug) as Blog;
+  const post = allBlogs.find((p) => p.slug === slug) as Blog;
   const authorList = post?.authors || ["default"];
-  const authorDetails = authorList.map(author => {
-    const authorResults = allAuthors.find(p => p.slug === author);
+  const authorDetails = authorList.map((author) => {
+    const authorResults = allAuthors.find((p) => p.slug === author);
     return coreContent(authorResults as Authors);
   });
   const jsonLd = post.structuredData;
-  jsonLd["author"] = authorDetails.map(author => {
+  jsonLd["author"] = authorDetails.map((author) => {
     return {
       "@type": "Person",
-      name: author.name
+      name: author.name,
     };
   });
 
@@ -176,7 +176,7 @@ export default async function Page(props: {
   const relatedPosts = getRelatedPosts(post, sortedCoreContents, 3);
 
   return (
-    <>  
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -187,10 +187,10 @@ export default async function Page(props: {
           {/* 主内容区 */}
           <article className="xl:w-3/4">
             {/* 文章头部 */}
-            <div className="mb-8">
+            <div className="my-8">
               <Link
                 href="/blog/articles"
-                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mb-6 transition-colors mt-4"
+                className="inline-flex items-center text-sm text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary mb-6 transition-colors"
               >
                 <svg
                   className="w-4 h-4 mr-1"
@@ -217,17 +217,20 @@ export default async function Page(props: {
               )}
 
               {/* 标题 */}
-              <h1 className="text-3xl font-extrabold leading-tight text-gray-900 dark:text-white sm:text-4xl sm:leading-none md:text-5xl">
+              <h1 className="text-3xl font-extrabold leading-tight text-foreground sm:text-4xl sm:leading-none md:text-5xl">
                 {post.title}
               </h1>
 
-
+              {/* 描述 */}
+              {post.summary && (
+                <p className="mt-4 text-xl text-muted">{post.summary}</p>
+              )}
 
               {/* 元数据 */}
-              <div className="mt-6 flex flex-wrap items-center text-gray-500 dark:text-gray-400">
+              <div className="mt-6 flex flex-wrap items-center text-muted">
                 {/* 作者 */}
                 <div className="mr-6 flex items-center">
-                  {authorDetails.map(author => (
+                  {authorDetails.map((author) => (
                     <div key={author.name} className="flex items-center">
                       {author.avatar && (
                         <Image
@@ -243,7 +246,7 @@ export default async function Page(props: {
                   ))}
                 </div>
 
-                {/* 日期 */}  
+                {/* 日期 */}
                 <time className="mr-6" dateTime={post.date}>
                   {formatDate(post.date)}
                 </time>
@@ -292,27 +295,28 @@ export default async function Page(props: {
             </div>
 
             {/* 文章底部 */}
-            <div className="mt-12  pt-8">
+            <div className="mt-12 border-t border-border pt-8">
+              {/* 分享按钮 */}
 
               {/* 相关文章 */}
               {/* {relatedPosts.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-lg font-bold text-foreground mb-4">
                     相关文章
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {relatedPosts.map(relatedPost => (
+                    {relatedPosts.map((relatedPost) => (
                       <Link
                         key={relatedPost.slug}
                         href={`/blog/articles/${relatedPost.slug}`}
-                        className="group block overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                        className="group block overflow-hidden rounded-xl border border-border bg-background shadow-sm hover:shadow-lg transition-all duration-200 hover:border-primary"
                       >
-                        <div className="p-4">
-                          <h4 className="font-medium text-foreground group-hover:text-primary dark:group-hover:text-primary-light line-clamp-2 mb-2">
+                        <div className="p-5">
+                          <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-1 line-clamp-2">
                             {relatedPost.title}
                           </h4>
-                          <p className="text-sm text-muted line-clamp-2">
-                            {relatedPost.description || relatedPost.summary}
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {relatedPost.summary}
                           </p>
                         </div>
                       </Link>
@@ -326,9 +330,9 @@ export default async function Page(props: {
                 {prev && (
                   <Link
                     href={`/blog/articles/${prev.slug}`}
-                    className="group p-4 border border-gray-200 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    className="group flex items-center justify-between p-4 rounded-xl bg-secondary border border-border hover:bg-primary-light transition-colors"
                   >
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex items-center">
+                    <span className="flex items-center text-muted">
                       <svg
                         className="w-4 h-4 mr-1"
                         fill="none"
@@ -344,19 +348,19 @@ export default async function Page(props: {
                         />
                       </svg>
                       上一篇
-                    </div>
-                    <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    </span>
+                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                       {prev.title}
-                    </h4>
+                    </span>
                   </Link>
                 )}
 
                 {next && (
                   <Link
                     href={`/blog/articles/${next.slug}`}
-                    className="group p-4 border border-gray-200 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors sm:text-right"
+                    className="group flex items-center justify-between p-4 rounded-xl bg-secondary border border-border hover:bg-primary-light transition-colors"
                   >
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex items-center sm:justify-end">
+                    <span className="flex items-center text-muted">
                       下一篇
                       <svg
                         className="w-4 h-4 ml-1"
@@ -372,10 +376,10 @@ export default async function Page(props: {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                    </div>
-                    <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    </span>
+                    <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                       {next.title}
-                    </h4>
+                    </span>
                   </Link>
                 )}
               </div>
